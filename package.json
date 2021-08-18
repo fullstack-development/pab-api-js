@@ -1,0 +1,20 @@
+{
+  "name": "pab-api-js",
+  "version": "1.0.0",
+  "description": "Js wrapper for PAB API",
+  "scripts": {
+    "build": "microbundle -f umd --no-sourcemap --no-compress",
+    "dev": "microbundle watch -f umd --no-sourcemap --no-compress"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "microbundle": "^0.13.3"
+  },
+  "dependencies": {
+    "axios": "^0.21.1"
+  },
+  "source": "src/index.ts",
+  "main": "dist/index.umd.js",
+  "types": "dist/index.d.ts"
+}
