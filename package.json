@@ -7,7 +7,7 @@
     "dev": "microbundle watch -f umd --no-sourcemap --no-compress"
   },
   "author": "",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "devDependencies": {
     "microbundle": "^0.13.3"
   },

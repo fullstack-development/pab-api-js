@@ -25,7 +25,14 @@
     return _extends.apply(this, arguments);
   }
 
-  var Pab = function Pab(host, axiosConfig) {
+  /** Class representing a PAB (Plutus Application Backend). */
+
+  var Pab =
+  /**
+   * @param {string} host - The host of PAB.
+   * @param {Object} [axiosConfig={}] - A custom config for the axios instance.
+   */
+  function Pab(host, axiosConfig) {
     var _this = this;
 
     if (axiosConfig === void 0) {
@@ -54,7 +61,7 @@
           'Content-Type': 'application/json'
         }
       }).then(function (res) {
-        return res.data;
+        return res.data.unContractInstanceId;
       });
     };
 
@@ -65,7 +72,7 @@
     };
 
     this.getContractSchema = function (contractInstanceId) {
-      return _this.axios.get("api/new/contract/instance/" + contractInstanceId + "/schema").then(function (res) {
+      return _this.axios.get("api/contract/" + contractInstanceId + "/schema").then(function (res) {
         return res.data;
       });
     };
@@ -81,9 +88,7 @@
     };
 
     this.stopContract = function (contractInstanceId) {
-      return _this.axios.put("api/new/contract/instance/" + contractInstanceId + "/stop").then(function (res) {
-        return res.data;
-      });
+      return _this.axios.put("api/new/contract/instance/" + contractInstanceId + "/stop");
     };
 
     this.getContractsByWallet = function (walletId) {
@@ -109,7 +114,8 @@
     }));
   }
   /**
-   * Some description for checkPabExists
+   * Checks, if the PAB instance exists.
+   * @return {Promise<boolean>} - Promise fulfilled by boolean.
    */
 ;
 
