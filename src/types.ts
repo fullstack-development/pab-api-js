@@ -14,7 +14,7 @@ export type FullReport = {
 
 type CrAvailableContract = unknown;
 
-type ContractState = [
+export type ContractState = [
   {
     unContractInstanceId: string;
   },
@@ -85,20 +85,20 @@ export type ContractStatus = {
     unContractInstanceId: string;
   };
   cicWallet: { getWallet: number }; // ? will be caWallet: string
-  cicDefintion: {
-    contents: {
-      unCurrencySymbol: string;
-    };
-    tag: string;
-  };
+  cicDefintion: ContractDefinition;
+};
+
+export type ContractDefinition = {
+  contents: ContractObservableStateType1;
+  tag: string;
 };
 
 export type ContractSchema = {
   csrSchemas: EndpointSchema[];
-  csrDefinition: ContractObservableStateType1;
+  csrDefinition: ContractDefinition;
 };
 
-type EndpointSchema = {
+export type EndpointSchema = {
   // ? name of type
   argument: { tag: string };
   endpointDescription: { getEndpointDescription: string };
