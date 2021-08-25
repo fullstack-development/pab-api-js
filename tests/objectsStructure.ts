@@ -1,81 +1,110 @@
 import {
   FullReport,
   ContractState,
-  ContractDefinition,
+  ContractStateInFullReport,
   ContractStatus,
   ContractSchema,
   EndpointSchema,
+  ContractLog,
+  ContractHook,
+  ContractHookInFullReport,
 } from '../src/types';
 
-export const fullReport: FullReport = {
-  contractReport: {
-    crAvailableContracts: expect.any(Array),
-    crActiveContractStates: expect.any(Array),
-  },
-  chainReport: {
-    utxoIndex: {
-      getIndex: expect.any(Array),
-    },
-    transactionMap: expect.any(Array),
-    annotatedBlockchain: expect.any(Array),
-  },
-};
-
-export const сontractState: ContractState = [
-  {
-    unContractInstanceId: expect.any(String),
-  },
-  {
-    observableState: expect.any(Object),
-    logs: expect.any(Array),
-    hooks: expect.any(Array),
-    err: null, // null or string
-    lastLogs: expect.any(Array),
-  },
-];
-
-const contractDefinition: ContractDefinition = {
-  contents: {
-    oOperator: {
-      getPubKeyHash: expect.any(String),
-    },
-    oAsset: {
-      unAssetClass: [
-        {
-          unCurrencySymbol: expect.any(String),
-        },
-        {
-          unTokenName: expect.any(String),
-        },
-      ],
-    },
-    oSymbol: {
-      unCurrencySymbol: expect.any(String),
-    },
-    oFee: expect.any(Number),
-  },
+const сontractError: ContractState['err'] = {
+  contents: expect.any(Object),
   tag: expect.any(String),
 };
 
-export const contractStatus: ContractStatus = {
-  cicCurrentState: expect.any(Object),
-  cicContract: {
+const сontractLog: ContractLog = {
+  _logMessageContent: expect.any(String),
+  _logLevel: expect.any(String),
+};
+
+const contractHook: ContractHook = {
+  rqID: expect.any(Number),
+  itID: expect.any(Number),
+  rqRequest: {
+    aeMetadata: null,
+    aeDescription: {
+      getEndpointDescription: expect.any(String),
+    },
+  },
+};
+
+const contractHookInFullReport: ContractHookInFullReport = {
+  rqID: expect.any(Number),
+  itID: expect.any(Number),
+  rqRequest: {
+    contents: {
+      aeMetadata: null,
+      aeDescription: {
+        getEndpointDescription: expect.any(String),
+      },
+    },
+    tag: expect.any(String),
+  },
+};
+
+const сontractStateInFullReport: ContractStateInFullReport = [
+  {
     unContractInstanceId: expect.any(String),
   },
-  cicWallet: { getWallet: expect.any(Number) },
-  cicDefintion: contractDefinition,
+  {
+    observableState: expect.emptyArray(),
+    logs: expect.toEqualInArray(сontractLog),
+    hooks: expect.toEqualInArray(contractHookInFullReport),
+    err: expect.toEqualOrNull(сontractError),
+    lastLogs: expect.toEqualInArray(сontractLog),
+  },
+];
+
+const contractState: ContractState = {
+  observableState: expect.emptyArray(),
+  logs: expect.toEqualInArray(сontractLog),
+  hooks: expect.toEqualInArray(contractHook),
+  err: expect.toEqualOrNull(сontractError),
+  lastLogs: expect.toEqualInArray(сontractLog),
 };
 
-export const contractSchema: ContractSchema = {
-  csrSchemas: expect.any(Array),
-  csrDefinition: contractDefinition,
-};
+const endpointSchemaArgumentContent: EndpointSchema['argument']['contents'][0] = [
+  expect.any(String),
+  { tag: expect.any(String) },
+];
 
-export const endpointSchema: EndpointSchema = {
+const endpointSchema: EndpointSchema = {
   argument: {
+    contents: expect.toEqualInArray(endpointSchemaArgumentContent),
     tag: expect.any(String),
   },
   endpointDescription: {
     getEndpointDescription: expect.any(String),
   },
+};
+
+export const contractSchema: ContractSchema = {
+  csrSchemas: expect.toEqualInArray(endpointSchema),
+  csrDefinition: expect.any(String),
+};
+
+export const fullReport: FullReport = {
+  contractReport: {
+    crAvailableContracts: expect.toEqualInArray(contractSchema),
+    crActiveContractStates: expect.toEqualInArray(сontractStateInFullReport),
+  },
+  chainReport: {
+    utxoIndex: {
+      getIndex: expect.emptyArray(),
+    },
+    transactionMap: expect.emptyArray(),
+    annotatedBlockchain: expect.emptyArray(),
+  },
+};
+
+export const contractStatus: ContractStatus = {
+  cicCurrentState: contractState,
+  cicContract: {
+    unContractInstanceId: expect.any(String),
+  },
+  cicWallet: { getWallet: expect.any(Number) },
+  cicDefinition: expect.any(String),
 };

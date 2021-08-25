@@ -1,61 +1,66 @@
 export declare type FullReport = {
     contractReport: {
-        crAvailableContracts: CrAvailableContract[];
-        crActiveContractStates: ContractState[];
+        crAvailableContracts: ContractSchema[];
+        crActiveContractStates: ContractStateInFullReport[];
     };
     chainReport: {
         utxoIndex: {
-            getIndex: unknown[];
+            getIndex: any[];
         };
-        transactionMap: Transaction[];
-        annotatedBlockchain: AnnotatedBlockchain[];
+        transactionMap: any[];
+        annotatedBlockchain: any[];
     };
 };
-declare type CrAvailableContract = unknown;
-declare type ContractState = [
+export declare type ContractSchema = {
+    csrSchemas: EndpointSchema[];
+    csrDefinition: string;
+};
+export declare type EndpointSchema = {
+    argument: {
+        contents: [string, {
+            tag: string;
+        }][];
+        tag: string;
+    };
+    endpointDescription: {
+        getEndpointDescription: string;
+    };
+};
+export declare type ContractStateInFullReport = [
     {
         unContractInstanceId: string;
     },
     {
-        observableState: null | ContractObservableStateType1 | ContractObservableStateType2;
+        observableState: any[];
         logs: ContractLog[];
-        hooks: ContractHook[];
-        err: null | unknown;
+        hooks: ContractHookInFullReport[];
+        err: {
+            contents: string;
+            tag: string;
+        } | null;
         lastLogs: ContractLog[];
     }
 ];
-declare type ContractObservableStateType1 = {
-    oOperator: {
-        getPubKeyHash: string;
-    };
-    oAsset: {
-        unAssetClass: [
-            {
-                unCurrencySymbol: string;
-            },
-            {
-                unTokenName: string;
-            }
-        ];
-    };
-    oSymbol: {
-        unCurrencySymbol: string;
-    };
-    oFee: number;
+export declare type ContractState = {
+    observableState: any[];
+    logs: ContractLog[];
+    hooks: ContractHook[];
+    err: {
+        contents: string;
+        tag: string;
+    } | null;
+    lastLogs: ContractLog[];
 };
-declare type ContractObservableStateType2 = {
-    unCurrencySymbol: string;
-};
-declare type ContractLog = {
+export declare type ContractLog = {
     _logMessageContent: string;
-    _logLevel: 'Info' | unknown;
+    _logLevel: 'Info' | any;
 };
-declare type ContractHook = {
+export declare type ContractHookInFullReport = {
     rqID: number;
     itID: number;
     rqRequest: {
         contents: {
-            aeMetadata: null | unknown;
+            aeMetadata: null | any;
             aeDescription: {
                 getEndpointDescription: string;
             };
@@ -63,14 +68,14 @@ declare type ContractHook = {
         tag: string;
     };
 };
-declare type AnnotatedBlockchain = unknown;
-declare type Transaction = unknown;
-export declare type ContractActivationData = {
-    caID: {
-        tag: string;
-    };
-    caWallet: {
-        getWallet: number;
+export declare type ContractHook = {
+    rqID: number;
+    itID: number;
+    rqRequest: {
+        aeMetadata: null | any;
+        aeDescription: {
+            getEndpointDescription: string;
+        };
     };
 };
 export declare type ContractStatus = {
@@ -81,23 +86,5 @@ export declare type ContractStatus = {
     cicWallet: {
         getWallet: number;
     };
-    cicDefintion: {
-        contents: {
-            unCurrencySymbol: string;
-        };
-        tag: string;
-    };
+    cicDefinition: string;
 };
-export declare type ContractSchema = {
-    csrSchemas: EndpointSchema[];
-    csrDefinition: ContractObservableStateType1;
-};
-declare type EndpointSchema = {
-    argument: {
-        tag: string;
-    };
-    endpointDescription: {
-        getEndpointDescription: string;
-    };
-};
-export {};

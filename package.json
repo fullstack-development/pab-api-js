@@ -4,7 +4,6 @@
   "description": "Js wrapper for PAB API",
   "scripts": {
     "build": "microbundle -f umd --no-sourcemap --no-compress",
-    "dev": "microbundle watch -f umd --no-sourcemap --no-compress",
     "test": "jest --watch"
   },
   "author": "",

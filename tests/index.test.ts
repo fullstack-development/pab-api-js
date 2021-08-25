@@ -1,106 +1,153 @@
+import './extendJest';
+import { fullReport, contractStatus, contractSchema } from './objectsStructure';
 import { Pab } from '../src';
-import {
-  fullReport,
-  сontractState,
-  contractStatus,
-  contractSchema,
-  endpointSchema,
-} from './objectsStructure';
 
-const pab = new Pab('http://localhost:8080/');
+const pab = new Pab('http://localhost:9080/');
 
-const WALLET_ID = '1';
-const CONTRACT_ID = 'f8a85c20-8609-43cc-918c-ef100720790f';
-const CONTRACT_ACTIVATION_DATA = { caID: { tag: 'Init' }, caWallet: { getWallet: 1 } };
-const ENDPOINT = 'funds';
+const WALLET_1 = 1;
+const WALLET_2 = 2;
+const CONTRACT_NAME = 'GameContract';
+const ENDPOINT_LOCK = 'lock';
+const ENDPOINT_LOCK_DATA = {
+  amount: { getValue: [[{ unCurrencySymbol: '' }, [[{ unTokenName: '' }, 90]]]] },
+  secretWord: 'eagle',
+};
+const ENDPOINT_GUESS = 'guess';
+const ENDPOINT_GUESS_DATA = { guessWord: 'eagle' };
 
-describe('checkPabExists', () => {
-  // TODO now it will always be truthy
-  test("doesn't return error", async () => {
-    await expect(pab.checkPabExists()).resolves.not.toThrow();
+describe('Check endpoints and result structure', () => {
+  let CONTRACT_ID = '';
+
+  beforeAll((done) => {
+    pab
+      .activateContract(CONTRACT_NAME, WALLET_1)
+      .then((contractId) => {
+        if (typeof contractId !== 'string') throw Error;
+        CONTRACT_ID = contractId;
+        done();
+      })
+      .catch(() => {
+        console.error('Error in method "activateContract"');
+      });
   });
-});
 
-describe('getFullReport', () => {
-  test("doesn't return error", async () => {
-    await expect(pab.getFullReport()).resolves.not.toThrow();
+  describe('checkPabExists', () => {
+    test("doesn't return an error", async () => {
+      await expect(pab.checkPabExists()).resolves.toBeTruthy();
+    });
   });
 
-  test('returns object with right structure', async () => {
-    const result = await pab.getFullReport();
-    expect(result).toMatchObject(fullReport);
+  describe('getFullReport', () => {
+    test("doesn't return an error", async () => {
+      await expect(pab.getFullReport()).resolves.not.toThrow();
+    });
+    test('returns an object with the right structure', async () => {
+      await expect(pab.getFullReport()).resolves.toEqual(fullReport);
+    });
+  });
 
-    result.contractReport.crActiveContractStates.forEach((el) => {
-      expect(el).toMatchObject(сontractState);
+  describe('getContractStatus', () => {
+    test("doesn't return an error", async () => {
+      await expect(pab.getContractStatus(CONTRACT_ID)).resolves.not.toThrow();
+    });
+    test('returns an object with the right structure', async () => {
+      await expect(pab.getContractStatus(CONTRACT_ID)).resolves.toEqual(contractStatus);
+    });
+  });
+
+  describe('getContractSchema', () => {
+    test("doesn't return an error", async () => {
+      await expect(pab.getContractSchema(CONTRACT_ID)).resolves.not.toThrow();
+    });
+    test('returns an object with the right structure', async () => {
+      await expect(pab.getContractSchema(CONTRACT_ID)).resolves.toEqual(contractSchema);
+    });
+  });
+
+  describe('getContractsByWallet', () => {
+    test("doesn't return an error", async () => {
+      await expect(pab.getContractsByWallet(WALLET_1)).resolves.not.toThrow();
+    });
+    test('returns an object with the right structure', async () => {
+      await expect(pab.getContractsByWallet(WALLET_1)).resolves.toEqualInArray(contractStatus);
+    });
+  });
+
+  describe('getContracts', () => {
+    test("doesn't return an error", async () => {
+      await expect(pab.getContracts()).resolves.not.toThrow();
+    });
+    test('returns an object with the right structure', async () => {
+      await expect(pab.getContracts()).resolves.toEqualInArray(contractStatus);
+    });
+  });
+
+  describe('getContractsDefinitions', () => {
+    test("doesn't return an error", async () => {
+      await expect(pab.getContractsDefinitions()).resolves.not.toThrow();
+    });
+    test('returns an object with the right structure', async () => {
+      await expect(pab.getContractsDefinitions()).resolves.toEqualInArray(contractSchema);
+    });
+  });
+
+  describe('activateContract and stopContract', () => {
+    test("don't return an error", async () => {
+      const newContractId = await pab.activateContract(CONTRACT_NAME, WALLET_1);
+      await pab.stopContract(newContractId);
     });
   });
 });
 
-describe('activateContract', () => {
-  test("doesn't return error", async () => {
-    await expect(pab.activateContract(CONTRACT_ACTIVATION_DATA)).resolves.not.toThrow();
-  });
+describe('Test the contract endpoints, play guessing game', () => {
+  let CONTRACT_ID_BY_WALLET_1 = '';
+  let CONTRACT_ID_BY_WALLET_2 = '';
 
-  test('returns contract id as string', async () => {
-    const result = await pab.activateContract(CONTRACT_ACTIVATION_DATA);
-    expect(typeof result).toBe('string');
-  });
-});
-
-describe('getContractStatus', () => {
-  test("doesn't return error", async () => {
-    await expect(pab.getContractStatus(CONTRACT_ID)).resolves.not.toThrow();
-  });
-
-  test('returns object with right structure', async () => {
-    const result = await pab.getContractStatus(CONTRACT_ID);
-    expect(result).toMatchObject(contractStatus);
-  });
-});
-
-describe('getContractSchema', () => {
-  test("doesn't return error", async () => {
-    await expect(pab.getContractSchema(CONTRACT_ID)).resolves.not.toThrow();
-  });
-
-  test('returns object with right structure', async () => {
-    const result = await pab.getContractSchema(CONTRACT_ID);
-    expect(result).toMatchObject(contractSchema);
-
-    result.csrSchemas.forEach((el) => {
-      expect(el).toMatchObject(endpointSchema);
+  describe('Create the contract instances in two wallets, for two players', () => {
+    test('create the contract instance in wallet 1', async () => {
+      CONTRACT_ID_BY_WALLET_1 = await pab.activateContract(CONTRACT_NAME, WALLET_1);
+    });
+    test('create the contract instance in wallet 2', async () => {
+      CONTRACT_ID_BY_WALLET_2 = await pab.activateContract(CONTRACT_NAME, WALLET_2);
     });
   });
-});
 
-describe('callContractEndpoint', () => {
-  test("doesn't return error", async () => {
-    await expect(pab.callContractEndpoint(CONTRACT_ID, ENDPOINT, {})).resolves.not.toThrow();
+  describe('Check the contract status after step 1', () => {
+    test('last log is "Waiting for guess or lock endpoint..."', async () => {
+      const logs = (await pab.getContractStatus(CONTRACT_ID_BY_WALLET_1)).cicCurrentState.logs;
+      expect(logs[logs.length - 1]._logMessageContent).toBe(
+        'Waiting for guess or lock endpoint...'
+      );
+    });
   });
-});
 
-describe('stopContract', () => {
-  test("doesn't return error", async () => {
-    // needed to activate new contract first
-    const newContractId = await pab.activateContract(CONTRACT_ACTIVATION_DATA);
-    await expect(pab.stopContract(newContractId)).resolves.not.toThrow();
+  describe('Player 1 locks some value in the contract', () => {
+    test('lock value "eagle"', async () => {
+      await pab.callContractEndpoint(CONTRACT_ID_BY_WALLET_1, ENDPOINT_LOCK, ENDPOINT_LOCK_DATA);
+    });
   });
-});
 
-describe('getContractsByWallet', () => {
-  test("doesn't return error", async () => {
-    await expect(pab.getContractsByWallet(WALLET_ID)).resolves.not.toThrow();
+  describe('Check the contract status after step 2', () => {
+    test('last log is "Pay Value ... to the script"', async () => {
+      const logs = (await pab.getContractStatus(CONTRACT_ID_BY_WALLET_1)).cicCurrentState.logs;
+      expect(logs[logs.length - 1]._logMessageContent).toBe(
+        `Pay Value (Map [(,Map [(\"\",90)])]) to the script`
+      );
+    });
   });
-});
 
-describe('getContracts', () => {
-  test("doesn't return error", async () => {
-    await expect(pab.getContracts()).resolves.not.toThrow();
+  describe('Player 2 makes a guess', () => {
+    test('try value "eagle"', async () => {
+      await pab.callContractEndpoint(CONTRACT_ID_BY_WALLET_2, ENDPOINT_GUESS, ENDPOINT_GUESS_DATA);
+    });
   });
-});
 
-describe('getContractsDefinitions', () => {
-  test("doesn't return error", async () => {
-    await expect(pab.getContractsDefinitions()).resolves.not.toThrow();
+  describe('Check the contract status after step 3', () => {
+    test('last log is "Waiting for script to have a UTxO of at least 1 lovelace"', async () => {
+      const logs = (await pab.getContractStatus(CONTRACT_ID_BY_WALLET_2)).cicCurrentState.logs;
+      expect(logs[logs.length - 1]._logMessageContent).toBe(
+        'Waiting for script to have a UTxO of at least 1 lovelace'
+      );
+    });
   });
 });

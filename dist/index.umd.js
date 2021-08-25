@@ -25,7 +25,7 @@
     return _extends.apply(this, arguments);
   }
 
-  /** Class representing a PAB (Plutus Application Backend). */
+  /** Class representing a PAB (Plutus Application Backend) API. */
 
   var Pab =
   /**
@@ -50,13 +50,18 @@
     };
 
     this.getFullReport = function () {
-      return _this.axios.get('api/full-report').then(function (res) {
+      return _this.axios.get('api/fullreport').then(function (res) {
         return res.data;
       });
     };
 
-    this.activateContract = function (data) {
-      return _this.axios.post('api/new/contract/activate', data, {
+    this.activateContract = function (contractName, walletNumber) {
+      return _this.axios.post('api/contract/activate', {
+        caID: contractName,
+        caWallet: {
+          getWallet: walletNumber
+        }
+      }, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -66,19 +71,23 @@
     };
 
     this.getContractStatus = function (contractInstanceId) {
-      return _this.axios.get("api/new/contract/instance/" + contractInstanceId + "/status").then(function (res) {
+      return _this.axios.get("api/contract/instance/" + contractInstanceId + "/status").then(function (res) {
         return res.data;
       });
     };
 
     this.getContractSchema = function (contractInstanceId) {
-      return _this.axios.get("api/contract/" + contractInstanceId + "/schema").then(function (res) {
+      return _this.axios.get("api/contract/instance/" + contractInstanceId + "/schema").then(function (res) {
         return res.data;
       });
     };
 
     this.callContractEndpoint = function (contractInstanceId, endpointName, data) {
-      return _this.axios.post("api/new/contract/instance/" + contractInstanceId + "/endpoint/" + endpointName, data, {
+      if (data === void 0) {
+        data = {};
+      }
+
+      return _this.axios.post("api/contract/instance/" + contractInstanceId + "/endpoint/" + endpointName, data, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -88,23 +97,23 @@
     };
 
     this.stopContract = function (contractInstanceId) {
-      return _this.axios.put("api/new/contract/instance/" + contractInstanceId + "/stop");
+      return _this.axios.put("api/contract/instance/" + contractInstanceId + "/stop");
     };
 
-    this.getContractsByWallet = function (walletId) {
-      return _this.axios.get("api/new/contract/instances/wallet/" + walletId).then(function (res) {
+    this.getContractsByWallet = function (walletNumber) {
+      return _this.axios.get("api/contract/instances/wallet/" + walletNumber).then(function (res) {
         return res.data;
       });
     };
 
     this.getContracts = function () {
-      return _this.axios.get('api/new/contract/instances').then(function (res) {
+      return _this.axios.get('api/contract/instances').then(function (res) {
         return res.data;
       });
     };
 
     this.getContractsDefinitions = function () {
-      return _this.axios.get('api/new/contract/definitions').then(function (res) {
+      return _this.axios.get('api/contract/definitions').then(function (res) {
         return res.data;
       });
     };

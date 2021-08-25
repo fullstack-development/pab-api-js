@@ -1,6 +1,6 @@
 import { AxiosRequestConfig } from 'axios';
-import { FullReport, ContractActivationData, ContractStatus, ContractSchema } from './types';
-/** Class representing a PAB (Plutus Application Backend). */
+import { FullReport, ContractStatus, ContractSchema } from './types';
+/** Class representing a PAB (Plutus Application Backend) API. */
 export declare class Pab {
     private axios;
     /**
@@ -20,12 +20,12 @@ export declare class Pab {
     getFullReport: () => Promise<FullReport>;
     /**
      * Activate contract.
-     * @param {Object} data
-     * @param {string} data.caId - Contract id.
-     * @param {string} data.caWallet - Wallet id.
+     * @param {string} contractName - Contract name, that you get from calling `fullreport` or
+     *                                `definitions` in field `csrDefinition`.
+     * @param {number} walletNumber - Wallet number, integer from 1 to 10.
      * @return {Promise<string>} - Promise fulfilled by the activated contract instance id.
      */
-    activateContract: (data: ContractActivationData) => Promise<string>;
+    activateContract: (contractName: string, walletNumber: number) => Promise<string>;
     /**
      * Get the contract instance's status.
      * @param {string} contractInstanceId - Contract instance id.
@@ -43,11 +43,12 @@ export declare class Pab {
      * @param {string} contractInstanceId - Contract instance id.
      * @param {string} endpointName - Action to call on this contract instance.
      * @param {Object} data - The current endpoint parameters. Parameters are different for different
-     *                        contracts and endpoints.
+     *                        contracts and endpoints. Relate to `schema` endpoint to know about this
+     *                        endpoint data structure.
      * @return {Promise<Object>} - Promise fulfilled by the current endpoint returning object. Objects
      *                             are different for different contracts and endpoints.
      */
-    callContractEndpoint: (contractInstanceId: string, endpointName: string, data: any) => Promise<any>;
+    callContractEndpoint: (contractInstanceId: string, endpointName: string, data?: object) => Promise<any>;
     /**
      * Stop the contract instance.
      * @param {string} contractInstanceId - Contract instance id.
@@ -56,10 +57,10 @@ export declare class Pab {
     stopContract: (contractInstanceId: string) => Promise<void>;
     /**
      * Get all contract instances statuses by the wallet.
-     * @param {string} walletId - Wallet instance id.
+     * @param {number} walletNumber - Wallet number, integer from 1 to 10.
      * @return {Promise<Array>} - Promise fulfilled by the wallet's contracts statuses array.
      */
-    getContractsByWallet: (walletId: string) => Promise<ContractStatus[]>;
+    getContractsByWallet: (walletNumber: number) => Promise<ContractStatus[]>;
     /**
      * Get all contract instances statuses by all wallets.
      * @return {Promise<Array>} - Promise fulfilled by all wallets contracts statuses array.
@@ -69,5 +70,6 @@ export declare class Pab {
      * Get all contracts definitions.
      * @return {Promise<Array>}
      */
-    getContractsDefinitions: () => Promise<[]>;
+    getContractsDefinitions: () => Promise<ContractSchema[]>;
 }
+export * from './types';
