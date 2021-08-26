@@ -91,8 +91,6 @@
         headers: {
           'Content-Type': 'application/json'
         }
-      }).then(function (res) {
-        return res.data;
       });
     };
 

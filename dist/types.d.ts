@@ -35,7 +35,7 @@ export declare type ContractStateInFullReport = [
         logs: ContractLog[];
         hooks: ContractHookInFullReport[];
         err: {
-            contents: string;
+            contents: any;
             tag: string;
         } | null;
         lastLogs: ContractLog[];
@@ -46,7 +46,7 @@ export declare type ContractState = {
     logs: ContractLog[];
     hooks: ContractHook[];
     err: {
-        contents: string;
+        contents: any;
         tag: string;
     } | null;
     lastLogs: ContractLog[];

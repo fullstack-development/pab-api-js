@@ -45,10 +45,8 @@ export declare class Pab {
      * @param {Object} data - The current endpoint parameters. Parameters are different for different
      *                        contracts and endpoints. Relate to `schema` endpoint to know about this
      *                        endpoint data structure.
-     * @return {Promise<Object>} - Promise fulfilled by the current endpoint returning object. Objects
-     *                             are different for different contracts and endpoints.
      */
-    callContractEndpoint: (contractInstanceId: string, endpointName: string, data?: object) => Promise<any>;
+    callContractEndpoint: (contractInstanceId: string, endpointName: string, data?: object) => Promise<void>;
     /**
      * Stop the contract instance.
      * @param {string} contractInstanceId - Contract instance id.
