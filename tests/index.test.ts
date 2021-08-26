@@ -32,13 +32,13 @@ describe('Check endpoints and result structure', () => {
   });
 
   describe('checkPabExists', () => {
-    test("doesn't return an error", async () => {
+    test("returns true", async () => {
       await expect(pab.checkPabExists()).resolves.toBeTruthy();
     });
   });
 
   describe('getFullReport', () => {
-    test("doesn't return an error", async () => {
+    test("doesn't throw an exception", async () => {
       await expect(pab.getFullReport()).resolves.not.toThrow();
     });
     test('returns an object with the right structure', async () => {
@@ -47,7 +47,7 @@ describe('Check endpoints and result structure', () => {
   });
 
   describe('getContractStatus', () => {
-    test("doesn't return an error", async () => {
+    test("doesn't throw an exception", async () => {
       await expect(pab.getContractStatus(CONTRACT_ID)).resolves.not.toThrow();
     });
     test('returns an object with the right structure', async () => {
@@ -56,7 +56,7 @@ describe('Check endpoints and result structure', () => {
   });
 
   describe('getContractSchema', () => {
-    test("doesn't return an error", async () => {
+    test("doesn't throw an exception", async () => {
       await expect(pab.getContractSchema(CONTRACT_ID)).resolves.not.toThrow();
     });
     test('returns an object with the right structure', async () => {
@@ -65,7 +65,7 @@ describe('Check endpoints and result structure', () => {
   });
 
   describe('getContractsByWallet', () => {
-    test("doesn't return an error", async () => {
+    test("doesn't throw an exception", async () => {
       await expect(pab.getContractsByWallet(WALLET_1)).resolves.not.toThrow();
     });
     test('returns an object with the right structure', async () => {
@@ -74,7 +74,7 @@ describe('Check endpoints and result structure', () => {
   });
 
   describe('getContracts', () => {
-    test("doesn't return an error", async () => {
+    test("doesn't throw an exception", async () => {
       await expect(pab.getContracts()).resolves.not.toThrow();
     });
     test('returns an object with the right structure', async () => {
@@ -83,7 +83,7 @@ describe('Check endpoints and result structure', () => {
   });
 
   describe('getContractsDefinitions', () => {
-    test("doesn't return an error", async () => {
+    test("doesn't throw an exception", async () => {
       await expect(pab.getContractsDefinitions()).resolves.not.toThrow();
     });
     test('returns an object with the right structure', async () => {
@@ -92,7 +92,7 @@ describe('Check endpoints and result structure', () => {
   });
 
   describe('activateContract and stopContract', () => {
-    test("don't return an error", async () => {
+    test("don't throw exceptions", async () => {
       const newContractId = await pab.activateContract(CONTRACT_NAME, WALLET_1);
       await pab.stopContract(newContractId);
     });

@@ -69,19 +69,15 @@ export class Pab {
    * @param {Object} data - The current endpoint parameters. Parameters are different for different
    *                        contracts and endpoints. Relate to `schema` endpoint to know about this
    *                        endpoint data structure.
-   * @return {Promise<Object>} - Promise fulfilled by the current endpoint returning object. Objects
-   *                             are different for different contracts and endpoints.
    */
   callContractEndpoint = (
     contractInstanceId: string,
     endpointName: string,
     data: object = {}
-  ): Promise<any> =>
-    this.axios
-      .post(`api/contract/instance/${contractInstanceId}/endpoint/${endpointName}`, data, {
-        headers: { 'Content-Type': 'application/json' },
-      })
-      .then((res) => res.data);
+  ): Promise<void> =>
+    this.axios.post(`api/contract/instance/${contractInstanceId}/endpoint/${endpointName}`, data, {
+      headers: { 'Content-Type': 'application/json' },
+    });
 
   /**
    * Stop the contract instance.
