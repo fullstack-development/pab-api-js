@@ -27,6 +27,14 @@ const getReport = async () => {
 getReport();
 ```
 
+In folder `example` there is an example of usage this lib with Uniswap-clone contract. It repeats steps from lesson 10 of plutus-pioneer-program https://plutus-pioneer-program.readthedocs.io/en/latest/pioneer/week10.html. 
+
+To run the example, you first need to run PAB from lesson 10 https://github.com/input-output-hk/plutus-pioneer-program or plutus-pab from plutus repo https://github.com/input-output-hk/plutus/tree/master/plutus-pab (command `cabal run plutus-uniswap`)
+
+```bash
+  npm run example
+```
+
 ## Development
 
 To bundle the result code, run

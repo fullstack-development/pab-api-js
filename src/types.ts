@@ -54,7 +54,7 @@ export type ContractState = {
 
 export type ContractLog = {
   _logMessageContent: string;
-  _logLevel: 'Info' | any;
+  _logLevel: 'Info' | 'Warning' | any;
 };
 
 export type ContractHookInFullReport = {

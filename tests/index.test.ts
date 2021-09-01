@@ -5,15 +5,7 @@ import { Pab } from '../src';
 const pab = new Pab('http://localhost:9080/');
 
 const WALLET_1 = 1;
-const WALLET_2 = 2;
 const CONTRACT_NAME = 'GameContract';
-const ENDPOINT_LOCK = 'lock';
-const ENDPOINT_LOCK_DATA = {
-  amount: { getValue: [[{ unCurrencySymbol: '' }, [[{ unTokenName: '' }, 90]]]] },
-  secretWord: 'eagle',
-};
-const ENDPOINT_GUESS = 'guess';
-const ENDPOINT_GUESS_DATA = { guessWord: 'eagle' };
 
 describe('Check endpoints and result structure', () => {
   let CONTRACT_ID = '';
@@ -32,7 +24,7 @@ describe('Check endpoints and result structure', () => {
   });
 
   describe('checkPabExists', () => {
-    test("returns true", async () => {
+    test('returns true', async () => {
       await expect(pab.checkPabExists()).resolves.toBeTruthy();
     });
   });
@@ -94,60 +86,76 @@ describe('Check endpoints and result structure', () => {
   describe('activateContract and stopContract', () => {
     test("don't throw exceptions", async () => {
       const newContractId = await pab.activateContract(CONTRACT_NAME, WALLET_1);
-      await pab.stopContract(newContractId);
+      expect(typeof newContractId).toBe('string');
+      await expect(pab.stopContract(newContractId)).resolves.not.toThrow();
     });
   });
 });
 
+const WALLET_2 = 2;
+const WALLET_3 = 3;
+const ENDPOINT_LOCK = 'lock';
+const ENDPOINT_LOCK_DATA = {
+  amount: { getValue: [[{ unCurrencySymbol: '' }, [[{ unTokenName: '' }, 90]]]] },
+  secretWord: 'eagle',
+};
+const ENDPOINT_GUESS = 'guess';
+const ENDPOINT_GUESS_DATA_WRONG = { guessWord: 'goose' };
+const ENDPOINT_GUESS_DATA_RIGHT = { guessWord: 'eagle' };
+
+let CONTRACT_ID_BY_WALLET_1 = '';
+let CONTRACT_ID_BY_WALLET_2 = '';
+let CONTRACT_ID_BY_WALLET_3 = '';
+
+const makeDelay = (ms = 1000) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const expectLog = async (contractId: string, logMessage: string) => {
+  const logs = (await pab.getContractStatus(contractId)).cicCurrentState.logs;
+  expect(logs.some((log) => log._logMessageContent === logMessage)).toBeTruthy();
+};
+
 describe('Test the contract endpoints, play guessing game', () => {
-  let CONTRACT_ID_BY_WALLET_1 = '';
-  let CONTRACT_ID_BY_WALLET_2 = '';
-
-  describe('Create the contract instances in two wallets, for two players', () => {
-    test('create the contract instance in wallet 1', async () => {
+  describe('Create the contract instances in three wallets, for three players', () => {
+    test('created without exceptions', async () => {
       CONTRACT_ID_BY_WALLET_1 = await pab.activateContract(CONTRACT_NAME, WALLET_1);
-    });
-    test('create the contract instance in wallet 2', async () => {
       CONTRACT_ID_BY_WALLET_2 = await pab.activateContract(CONTRACT_NAME, WALLET_2);
-    });
-  });
-
-  describe('Check the contract status after step 1', () => {
-    test('last log is "Waiting for guess or lock endpoint..."', async () => {
-      const logs = (await pab.getContractStatus(CONTRACT_ID_BY_WALLET_1)).cicCurrentState.logs;
-      expect(logs[logs.length - 1]._logMessageContent).toBe(
-        'Waiting for guess or lock endpoint...'
-      );
+      CONTRACT_ID_BY_WALLET_3 = await pab.activateContract(CONTRACT_NAME, WALLET_3);
     });
   });
 
   describe('Player 1 locks some value in the contract', () => {
-    test('lock value "eagle"', async () => {
+    test('lock value "eagle", expect correct logs', async () => {
       await pab.callContractEndpoint(CONTRACT_ID_BY_WALLET_1, ENDPOINT_LOCK, ENDPOINT_LOCK_DATA);
-    });
-  });
-
-  describe('Check the contract status after step 2', () => {
-    test('last log is "Pay Value ... to the script"', async () => {
-      const logs = (await pab.getContractStatus(CONTRACT_ID_BY_WALLET_1)).cicCurrentState.logs;
-      expect(logs[logs.length - 1]._logMessageContent).toBe(
+      await expectLog(
+        CONTRACT_ID_BY_WALLET_1,
         `Pay Value (Map [(,Map [(\"\",90)])]) to the script`
       );
+      await makeDelay();
     });
   });
 
   describe('Player 2 makes a guess', () => {
-    test('try value "eagle"', async () => {
-      await pab.callContractEndpoint(CONTRACT_ID_BY_WALLET_2, ENDPOINT_GUESS, ENDPOINT_GUESS_DATA);
+    test('try wrong value "goose", expect correct logs', async () => {
+      await pab.callContractEndpoint(
+        CONTRACT_ID_BY_WALLET_2,
+        ENDPOINT_GUESS,
+        ENDPOINT_GUESS_DATA_WRONG
+      );
+      await expectLog(
+        CONTRACT_ID_BY_WALLET_2,
+        'Incorrect secret word, but still submiting the transaction'
+      );
     });
   });
 
-  describe('Check the contract status after step 3', () => {
-    test('last log is "Waiting for script to have a UTxO of at least 1 lovelace"', async () => {
-      const logs = (await pab.getContractStatus(CONTRACT_ID_BY_WALLET_2)).cicCurrentState.logs;
-      expect(logs[logs.length - 1]._logMessageContent).toBe(
-        'Waiting for script to have a UTxO of at least 1 lovelace'
+  describe('Player 3 makes a guess', () => {
+    test('try right value "eagle", expect correct logs', async () => {
+      await pab.callContractEndpoint(
+        CONTRACT_ID_BY_WALLET_3,
+        ENDPOINT_GUESS,
+        ENDPOINT_GUESS_DATA_RIGHT
       );
+      await expectLog(CONTRACT_ID_BY_WALLET_3, 'Correct secret word! Submitting the transaction');
     });
   });
 });
