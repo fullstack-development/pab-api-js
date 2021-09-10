@@ -21,11 +21,11 @@ const initConsts = async () => {
 };
 
 const getStatus = async (contractId, endpointName) => {
+  await makeDelay(2000);
   let status;
-  while (status?.cicCurrentState?.observableState?.Right?.tag?.toLowerCase() !== endpointName) {
-    await makeDelay(2000);
-    await pab.callContractEndpoint(contractId, endpointName, []);
 
+  while (status?.cicCurrentState?.observableState?.Right?.tag?.toLowerCase() !== endpointName) {
+    await pab.callContractEndpoint(contractId, endpointName, []);
     await makeDelay(1000);
     status = await pab.getContractStatus(contractId);
   }

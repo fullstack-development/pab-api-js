@@ -1,8 +1,8 @@
-import { AxiosRequestConfig } from 'axios';
+import { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { FullReport, ContractStatus, ContractSchema } from './types';
 /** Class representing a PAB (Plutus Application Backend) API. */
 export declare class Pab {
-    private axios;
+    axios: AxiosInstance;
     /**
      * @param {string} host - The host of PAB.
      * @param {Object} [axiosConfig={}] - A custom config for the axios instance.

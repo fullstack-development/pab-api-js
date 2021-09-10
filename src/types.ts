@@ -14,7 +14,7 @@ export type FullReport = {
 
 export type ContractSchema = {
   csrSchemas: EndpointSchema[];
-  csrDefinition: string;
+  csrDefinition: { tag: string };
 };
 
 export type EndpointSchema = {
@@ -30,7 +30,7 @@ export type ContractStateInFullReport = [
     unContractInstanceId: string;
   },
   {
-    observableState: any[];
+    observableState: any;
     logs: ContractLog[];
     hooks: ContractHookInFullReport[];
     err: {
@@ -42,7 +42,7 @@ export type ContractStateInFullReport = [
 ];
 
 export type ContractState = {
-  observableState: any[];
+  observableState: any;
   logs: ContractLog[];
   hooks: ContractHook[];
   err: {
@@ -88,5 +88,5 @@ export type ContractStatus = {
     unContractInstanceId: string;
   };
   cicWallet: { getWallet: number };
-  cicDefinition: string;
+  cicDefinition: { tag: string };
 };
