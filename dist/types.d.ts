@@ -31,7 +31,7 @@ export declare type ContractStateInFullReport = [
         unContractInstanceId: string;
     },
     {
-        observableState: any[];
+        observableState: any;
         logs: ContractLog[];
         hooks: ContractHookInFullReport[];
         err: {
@@ -42,7 +42,7 @@ export declare type ContractStateInFullReport = [
     }
 ];
 export declare type ContractState = {
-    observableState: any[];
+    observableState: any;
     logs: ContractLog[];
     hooks: ContractHook[];
     err: {

@@ -3,7 +3,7 @@ import { FullReport, ContractStatus, ContractSchema } from './types';
 
 /** Class representing a PAB (Plutus Application Backend) API. */
 export class Pab {
-  private axios: AxiosInstance;
+  axios: AxiosInstance;
 
   /**
    * @param {string} host - The host of PAB.
@@ -41,7 +41,7 @@ export class Pab {
     this.axios
       .post(
         'api/contract/activate',
-        { caID: contractName, caWallet: { getWallet: walletNumber } },
+        { caID: { tag: contractName }, caWallet: { getWallet: walletNumber } },
         { headers: { 'Content-Type': 'application/json' } }
       )
       .then((res) => res.data.unContractInstanceId);
