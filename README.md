@@ -25,7 +25,10 @@ const getReport = async () => {
 };
 
 getReport();
+
 ```
+
+### Examples
 
 In folder `examples/simple` there is an example of using this lib with Uniswap-clone contract. It repeats steps from [lesson 10](https://plutus-pioneer-program.readthedocs.io/en/latest/pioneer/week10.html) of the plutus-pioneer-program. 
 
