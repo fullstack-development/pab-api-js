@@ -13,11 +13,13 @@ export declare type FullReport = {
 };
 export declare type ContractSchema = {
     csrSchemas: EndpointSchema[];
-    csrDefinition: string;
+    csrDefinition: {
+        tag: string;
+    };
 };
 export declare type EndpointSchema = {
     argument: {
-        contents: [string, {
+        contents?: [string, {
             tag: string;
         }][];
         tag: string;
@@ -59,12 +61,7 @@ export declare type ContractHookInFullReport = {
     rqID: number;
     itID: number;
     rqRequest: {
-        contents: {
-            aeMetadata: null | any;
-            aeDescription: {
-                getEndpointDescription: string;
-            };
-        };
+        contents: any;
         tag: string;
     };
 };
@@ -86,5 +83,8 @@ export declare type ContractStatus = {
     cicWallet: {
         getWallet: number;
     };
-    cicDefinition: string;
+    cicDefinition: {
+        contents?: any;
+        tag: string;
+    };
 };
