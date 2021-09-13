@@ -58,6 +58,7 @@ class Store {
     } catch (err: any) {
       console.error(err);
       this.createLog('ERROR', `Initialization error\n\n${err?.message}`);
+      this.setLoadingAll(false);
     }
   };
 
