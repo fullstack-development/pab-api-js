@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Js wrapper for PAB API",
   "scripts": {
-    "build": "microbundle -f umd --no-sourcemap --no-compress",
+    "build": "microbundle -f umd --no-sourcemap",
     "test": "jest --watch",
     "example": "node examples/simple/index.js"
   },
