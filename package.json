@@ -5,7 +5,7 @@
   "scripts": {
     "build": "microbundle -f umd --no-sourcemap --no-compress",
     "test": "jest --watch",
-    "example": "node example/index.js"
+    "example": "node examples/simple/index.js"
   },
   "author": "",
   "license": "Apache-2.0",

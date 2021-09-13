@@ -1,0 +1,36 @@
+@import 'styles/vars.scss';
+
+.root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 160px;
+  font-size: 11px;
+}
+
+.input {
+  height: 34px;
+  border: 1px solid $light;
+  border-radius: 4px;
+  background: #ffffff;
+  padding-left: 14px;
+  transition: 0.2s;
+  color: $dark;
+  font-family: 'Montserrat';
+
+  &::placeholder {
+    color: $light;
+    font-family: 'Montserrat';
+  }
+
+  &:hover,
+  &:focus {
+    border-color: $dark;
+    transition: 0.2s;
+    color: $dark;
+  }
+}
+
+.small {
+  max-width: 100px;
+}

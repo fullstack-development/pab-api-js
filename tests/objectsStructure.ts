@@ -1,3 +1,4 @@
+import './extendJest';
 import {
   FullReport,
   ContractState,
@@ -35,12 +36,7 @@ const contractHookInFullReport: ContractHookInFullReport = {
   rqID: expect.any(Number),
   itID: expect.any(Number),
   rqRequest: {
-    contents: {
-      aeMetadata: null,
-      aeDescription: {
-        getEndpointDescription: expect.any(String),
-      },
-    },
+    contents: expect.any(Object),
     tag: expect.any(String),
   },
 };
@@ -50,7 +46,7 @@ const сontractStateInFullReport: ContractStateInFullReport = [
     unContractInstanceId: expect.any(String),
   },
   {
-    observableState: expect.emptyArray(),
+    observableState: expect.anyOrNull(Object),
     logs: expect.toEqualInArray(сontractLog),
     hooks: expect.toEqualInArray(contractHookInFullReport),
     err: expect.toEqualOrNull(сontractError),
@@ -59,21 +55,15 @@ const сontractStateInFullReport: ContractStateInFullReport = [
 ];
 
 const contractState: ContractState = {
-  observableState: expect.emptyArray(),
+  observableState: expect.anyOrNull(Object),
   logs: expect.toEqualInArray(сontractLog),
   hooks: expect.toEqualInArray(contractHook),
   err: expect.toEqualOrNull(сontractError),
   lastLogs: expect.toEqualInArray(сontractLog),
 };
 
-const endpointSchemaArgumentContent: EndpointSchema['argument']['contents'][0] = [
-  expect.any(String),
-  { tag: expect.any(String) },
-];
-
 const endpointSchema: EndpointSchema = {
   argument: {
-    contents: expect.toEqualInArray(endpointSchemaArgumentContent),
     tag: expect.any(String),
   },
   endpointDescription: {
@@ -82,8 +72,8 @@ const endpointSchema: EndpointSchema = {
 };
 
 export const contractSchema: ContractSchema = {
-  csrSchemas: expect.toEqualInArray(endpointSchema),
-  csrDefinition: expect.any(String),
+  csrSchemas: expect.toMatchInArray(endpointSchema),
+  csrDefinition: { tag: expect.any(String) },
 };
 
 export const fullReport: FullReport = {
@@ -106,5 +96,7 @@ export const contractStatus: ContractStatus = {
     unContractInstanceId: expect.any(String),
   },
   cicWallet: { getWallet: expect.any(Number) },
-  cicDefinition: expect.any(String),
+  cicDefinition: {
+    tag: expect.any(String),
+  },
 };

@@ -19,7 +19,7 @@ export type ContractSchema = {
 
 export type EndpointSchema = {
   argument: {
-    contents: [string, { tag: string }][];
+    contents?: [string, { tag: string }][];
     tag: string;
   };
   endpointDescription: { getEndpointDescription: string };
@@ -61,12 +61,7 @@ export type ContractHookInFullReport = {
   rqID: number;
   itID: number;
   rqRequest: {
-    contents: {
-      aeMetadata: null | any;
-      aeDescription: {
-        getEndpointDescription: string;
-      };
-    };
+    contents: any;
     tag: string;
   };
 };
@@ -88,5 +83,8 @@ export type ContractStatus = {
     unContractInstanceId: string;
   };
   cicWallet: { getWallet: number };
-  cicDefinition: { tag: string };
+  cicDefinition: {
+    contents?: any; 
+    tag: string; 
+  };
 };

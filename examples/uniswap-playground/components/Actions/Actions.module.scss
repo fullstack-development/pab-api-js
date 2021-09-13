@@ -1,0 +1,82 @@
+@import 'styles/vars.scss';
+
+.title {
+  margin-bottom: 46px;
+}
+
+.action {
+  margin-bottom: 30px;
+
+  &Title {
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+    text-transform: uppercase;
+    color: $grey;
+    font-size: 15px;
+
+    &:after {
+      display: inline-block;
+      margin-left: 10px;
+      width: 13px;
+      height: 13px;
+      background-image: url('/arrow.svg');
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: contain;
+      transition: 0.3s;
+      vertical-align: middle;
+      content: '';
+    }
+
+    &:hover {
+      transition: 0.2s;
+      color: $primary;
+    }
+  }
+
+  &Open {
+    .action {
+      &Title {
+        color: $primary;
+
+        &:after {
+          fill: $primary;
+          transform: rotate(180deg);
+          transition: 0.3s;
+        }
+      }
+    }
+  }
+}
+
+.description {
+  margin-bottom: 20px;
+  max-width: 220px;
+  color: $dark;
+  font-size: 13px;
+}
+
+.form {
+  > div {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 10px;
+
+    > * {
+      margin: 0 5px;
+
+      &:first-child {
+        margin-left: 0;
+      }
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}
+
+.submit {
+  margin: 10px 0;
+}
