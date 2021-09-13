@@ -1,5 +1,5 @@
 const { getBody, makeDelay, printTitle, printBlock, printEndpoint } = require('./helpers');
-const { Pab } = require('../../dist');
+const { Pab } = require('../../');
 
 const pab = new Pab('http://localhost:9080/');
 
