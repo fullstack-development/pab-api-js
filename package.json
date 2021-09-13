@@ -5,7 +5,7 @@
   "scripts": {
     "build": "microbundle -f umd --no-sourcemap --no-compress",
     "test": "jest --watch",
-    "example": "node example/index.js"
+    "example": "node examples/simple/index.js"
   },
   "author": "",
   "license": "Apache-2.0",
@@ -19,7 +19,6 @@
   "dependencies": {
     "axios": "^0.21.1"
   },
-  "files": ["src/*, dist/*"],
   "source": "src/index.ts",
   "main": "dist/index.umd.js",
   "types": "dist/index.d.ts"

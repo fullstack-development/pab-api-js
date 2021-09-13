@@ -1,0 +1,43 @@
+
+.content {
+  display: grid;
+  margin: 0 auto;
+  max-width: 1240px;
+  min-height: 100vh;
+  padding: 0 20px;
+  grid-template-columns: 30% 70%;
+  grid-template-rows: min-content min-content min-content min-content;
+  gap: 20px 20px;
+  grid-template-areas:
+    'title title'
+    'wallets wallets'
+    'actions assets'
+    'actions logs';
+}
+
+.titleWrap {
+  grid-area: title;
+  text-align: center;
+}
+
+.error {
+  color: lightcoral;
+}
+
+.wallets {
+  grid-area: wallets;
+}
+
+.actions {
+  grid-area: actions;
+  width: 100%;
+  max-width: 400px;
+}
+
+.logs {
+  grid-area: logs;
+}
+
+.assets {
+  grid-area: assets;
+}

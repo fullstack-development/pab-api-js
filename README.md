@@ -27,13 +27,15 @@ const getReport = async () => {
 getReport();
 ```
 
-In folder `example` there is an example of usage this lib with Uniswap-clone contract. It repeats steps from lesson 10 of plutus-pioneer-program https://plutus-pioneer-program.readthedocs.io/en/latest/pioneer/week10.html. 
+In folder `examples/simple` there is an example of using this lib with Uniswap-clone contract. It repeats steps from [lesson 10](https://plutus-pioneer-program.readthedocs.io/en/latest/pioneer/week10.html) of the plutus-pioneer-program. 
 
-To run the example, you first need to run PAB from lesson 10 https://github.com/input-output-hk/plutus-pioneer-program or plutus-pab from plutus repo https://github.com/input-output-hk/plutus/tree/master/plutus-pab (command `cabal run plutus-uniswap`)
+To run the example, you first need to run the PAB from lesson 10 ([instruction](https://github.com/input-output-hk/plutus-pioneer-program)).
 
 ```bash
   npm run example
 ```
+
+The `examples/uniswap-playground` folder contains the Uniswap playground. Installation and usage - [README](https://github.com/fullstack-development/pab-api-js/tree/main/examples/uniswap-playground) 
 
 ## Development
 
@@ -43,7 +45,7 @@ To bundle the result code, run
   npm run build
 ```
 
-For tests, you first need to run PAB from https://github.com/input-output-hk/plutus-starter, then run
+For tests, you first need to run PAB with any contract
 
 ```bash
   npm run test

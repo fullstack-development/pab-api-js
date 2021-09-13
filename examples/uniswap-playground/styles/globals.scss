@@ -1,0 +1,23 @@
+@import './vars.scss';
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  color: $grey;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: $dark;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+* {
+  box-sizing: border-box;
+}

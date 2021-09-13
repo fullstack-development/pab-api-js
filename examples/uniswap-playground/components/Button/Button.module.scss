@@ -1,0 +1,43 @@
+@import 'styles/vars.scss';
+
+$gradientSemitransparent: linear-gradient(
+  180deg,
+  rgba($primary, 0.5) 0%,
+  rgba(139, 164, 249, 0.5) 100%
+);
+
+.root {
+  border: 0px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #bc9cff 0%, #8ba4f9 100%);
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: 0.2s;
+  text-transform: uppercase;
+  color: white;
+  font-family: Montserrat;
+  font-size: 12px;
+  font-weight: bold;
+
+  &:hover {
+    opacity: 0.7;
+    transition: 0.2s;
+  }
+}
+
+.outlined {
+  border: solid 2px transparent;
+  background-clip: padding-box, border-box;
+  -webkit-background-clip: padding-box, border-box;
+  background-image: linear-gradient(white, white), $gradient;
+  background-origin: border-box;
+  padding: 0;
+  padding: 10px 16px;
+  color: #bc9cff;
+
+  &:hover {
+    opacity: 1;
+    background-image: linear-gradient(white, white), $gradientSemitransparent;
+    transition: 0.2s;
+  }
+}

@@ -1,0 +1,35 @@
+@import 'styles/vars.scss';
+
+.root {
+  display: flex;
+  flex-direction: column;
+  width: 50px;
+  font-size: 11px;
+}
+
+.select {
+  height: 34px;
+  border: 1px solid $light;
+  border-radius: 4px;
+  background: #ffffff;
+  padding-left: 10px;
+  transition: 0.2s;
+  color: $dark;
+  font-family: 'Montserrat';
+
+  &::placeholder {
+    color: $light;
+    font-family: 'Montserrat';
+  }
+
+  &:hover,
+  &:focus {
+    border-color: $dark;
+    transition: 0.2s;
+    color: $dark;
+  }
+}
+
+.option {
+  font-family: 'Montserrat';
+}

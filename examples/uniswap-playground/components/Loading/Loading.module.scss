@@ -1,0 +1,28 @@
+@import 'styles/vars.scss';
+
+.root {
+  display: inline-block;
+  width: 17px;
+  height: 17px;
+  margin: 0 15px;
+}
+
+.root:after {
+  display: block;
+  width: 17px;
+  height: 17px;
+  border: 2px solid $primary;
+  border-radius: 50%;
+  border-color: $primary transparent $primary transparent;
+  animation: animation 1.2s linear infinite;
+  content: ' ';
+}
+
+@keyframes animation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
