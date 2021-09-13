@@ -5,12 +5,14 @@ declare global {
       anyOrNull(expectedType: any): R;
       toEqualOrNull(expectedObject: any): R;
       toEqualInArray(expectedObject: any): R;
+      toMatchInArray(expectedObject: any): R;
       emptyArray(): R;
     }
     interface Expect {
       anyOrNull(expectedType: any): any;
       toEqualOrNull(expectedObject: any): any;
       toEqualInArray(expectedObject: any): any;
+      toMatchInArray(expectedObject: any): any;
       emptyArray(): any;
     }
   }
@@ -33,6 +35,13 @@ expect.extend({
     if (
       Array.isArray(received) &&
       received.every((el) => expect(el).toEqual(argument) === undefined)
+    )
+      return OK;
+  },
+  toMatchInArray(received, argument) {
+    if (
+      Array.isArray(received) &&
+      received.every((el) => expect(el).toMatchObject(argument) === undefined)
     )
       return OK;
   },
