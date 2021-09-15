@@ -40,7 +40,7 @@ class Store {
       contracts.forEach((contract, i) => {
         const wallet = contract.cicWallet.getWalletId;
         CONTRACTS_BY_WALLETS[wallet] = contract.cicContract.unContractInstanceId;
-        this.wallets.push(wallet);
+        this.addWallet(wallet);
         if (i === 0) this.setCurrentWallet(wallet);
       });
 
@@ -90,6 +90,10 @@ class Store {
       }
     );
   };
+
+  addWallet = (wallet: string) => {
+    this.wallets.push(wallet);
+  }
 
   setGlobalError = (errorText: string) => {
     this.globalError = errorText;
