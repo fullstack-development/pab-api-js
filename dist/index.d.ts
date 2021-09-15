@@ -22,10 +22,10 @@ export declare class Pab {
      * Activate contract.
      * @param {string} contractName - Contract name, that you get from calling `fullreport` or
      *                                `definitions` in field `csrDefinition`.
-     * @param {number} walletNumber - Wallet number, integer from 1 to 10.
+     * @param {string} walletId - Wallet Id.
      * @return {Promise<string>} - Promise fulfilled by the activated contract instance id.
      */
-    activateContract: (contractName: string, walletNumber: number) => Promise<string>;
+    activateContract: (contractName: string, walletId: string) => Promise<string>;
     /**
      * Get the contract instance's status.
      * @param {string} contractInstanceId - Contract instance id.
@@ -55,10 +55,10 @@ export declare class Pab {
     stopContract: (contractInstanceId: string) => Promise<void>;
     /**
      * Get all contract instances statuses by the wallet.
-     * @param {number} walletNumber - Wallet number, integer from 1 to 10.
+     * @param {string} walletId - Wallet Id.
      * @return {Promise<Array>} - Promise fulfilled by the wallet's contracts statuses array.
      */
-    getContractsByWallet: (walletNumber: number) => Promise<ContractStatus[]>;
+    getContractsByWallet: (walletId: string) => Promise<ContractStatus[]>;
     /**
      * Get all contract instances statuses by all wallets.
      * @return {Promise<Array>} - Promise fulfilled by all wallets contracts statuses array.
