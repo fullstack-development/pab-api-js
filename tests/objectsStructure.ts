@@ -95,7 +95,7 @@ export const contractStatus: ContractStatus = {
   cicContract: {
     unContractInstanceId: expect.any(String),
   },
-  cicWallet: { getWallet: expect.any(Number) },
+  cicWallet: { getWalletId: expect.any(String) },
   cicDefinition: {
     tag: expect.any(String),
   },
