@@ -4,7 +4,7 @@ import { getEndpointRequestBody } from 'utils/helpers';
 import { callEndpoint, pab } from 'utils/pab';
 
 const SYMBOL: CurrencySymbol = {};
-const CONTRACTS_BY_WALLETS: { [key: number]: string } = {};
+const CONTRACTS_BY_WALLETS: { [key: string]: string } = {};
 
 type LoadingModule = 'actions' | 'assets';
 
@@ -13,8 +13,9 @@ class Store {
     actions: false,
     assets: true,
   };
-  pabExists: null | boolean = null;
-  currentWallet: number = 1;
+  globalError: string | null = null;
+  wallets: string[] = [];
+  currentWallet: string = '';
   funds: Asset[] = [];
   pools: Asset[] = [];
   logs: Log[] = [];
@@ -26,7 +27,7 @@ class Store {
   initProject = async () => {
     const pabExists = await pab.checkPabExists();
     if (!pabExists) {
-      this.setPubExists(false);
+      this.setGlobalError('PAB does not exist');
       this.setLoadingAll(false);
       return;
     }
@@ -36,26 +37,26 @@ class Store {
     try {
       // define CONTRACTS
       const contracts = await pab.getContracts();
-      contracts.forEach((contract) => {
-        const wallet = contract.cicWallet.getWallet;
+      contracts.forEach((contract, i) => {
+        const wallet = contract.cicWallet.getWalletId;
         CONTRACTS_BY_WALLETS[wallet] = contract.cicContract.unContractInstanceId;
+        this.wallets.push(wallet);
+        if (i === 0) this.setCurrentWallet(wallet);
       });
 
       // define SYMBOL
-      const state = await callEndpoint(CONTRACTS_BY_WALLETS[1], 'funds', []);
-      const symbol = state.observableState.Right.contents.getValue.find(
-        (el: any) =>
-          el[1][0][0].unTokenName === 'A' &&
-          el[1][1][0].unTokenName === 'B' &&
-          el[1][2][0].unTokenName === 'C' &&
-          el[1][3][0].unTokenName === 'D'
+      const state = await callEndpoint(CONTRACTS_BY_WALLETS[this.currentWallet], 'funds', []);
+      const symbol = state.observableState.Right.contents.getValue.find((el: any) =>
+        el[1].every((el: any) => ['A', 'B', 'C', 'D'].includes(el[0].unTokenName))
       )?.[0].unCurrencySymbol;
+      if (!symbol) throw new Error(`SYMBOL: ${symbol}`);
+      this.createLog('SUCCESS', `SYMBOL: ${symbol}`);
       SYMBOL.unCurrencySymbol = symbol;
-      this.createLog(symbol ? 'SUCCESS' : 'ERROR', `SYMBOL: ${symbol}`);
 
       await this.fetchAssets('funds');
       await this.fetchAssets('pools');
     } catch (err: any) {
+      this.setGlobalError('Initialization error');
       console.error(err);
       this.createLog('ERROR', `Initialization error\n\n${err?.message}`);
       this.setLoadingAll(false);
@@ -90,8 +91,8 @@ class Store {
     );
   };
 
-  setPubExists = (exists: boolean) => {
-    this.pabExists = exists;
+  setGlobalError = (errorText: string) => {
+    this.globalError = errorText;
   };
 
   setLoading = (loadingModule: LoadingModule, isLoading: boolean) => {
@@ -120,8 +121,12 @@ class Store {
     this.logs = [...this.logs, { type, message, time: new Date() }];
   };
 
-  selectWallet = (walletNumber: number) => {
+  setCurrentWallet = (walletNumber: string) => {
     this.currentWallet = walletNumber;
+  };
+
+  switchWallet = (walletNumber: string) => {
+    this.setCurrentWallet(walletNumber);
     this.fetchAssets('funds');
   };
 

@@ -8,7 +8,7 @@ import { Actions, Assets, Logs, Wallets } from 'components';
 import s from '../styles/Home.module.scss';
 
 const Home: NextPage = observer(() => {
-  const { pabExists } = store;
+  const { globalError } = store;
 
   useEffect(() => {
     store.initProject();
@@ -28,7 +28,7 @@ const Home: NextPage = observer(() => {
       <div className={s.content}>
         <div className={s.titleWrap}>
           <h1 className={s.title}>Uniswap</h1>
-          {pabExists === false && <h2 className={s.error}>PAB not found</h2>}
+          {globalError && <h2 className={s.error}>{globalError}</h2>}
         </div>
         <Wallets className={s.wallets} />
         <Actions className={s.actions} />

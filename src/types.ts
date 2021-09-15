@@ -82,7 +82,7 @@ export type ContractStatus = {
   cicContract: {
     unContractInstanceId: string;
   };
-  cicWallet: { getWallet: number };
+  cicWallet: { getWalletId: string };
   cicDefinition: {
     contents?: any; 
     tag: string; 

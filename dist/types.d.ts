@@ -81,7 +81,7 @@ export declare type ContractStatus = {
         unContractInstanceId: string;
     };
     cicWallet: {
-        getWallet: number;
+        getWalletId: string;
     };
     cicDefinition: {
         contents?: any;
