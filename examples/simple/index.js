@@ -6,16 +6,19 @@ const pab = new Pab('http://localhost:9080/');
 const SYMBOL = {};
 const CONTRACTS_BY_WALLETS = {};
 
+const wallets = ['Alice', 'Bob', 'Charlie'];
+
 const initConsts = async () => {
   const contracts = await pab.getContracts();
-  contracts.forEach((contract) => {
-    const wallet = contract.cicWallet.getWallet;
-    CONTRACTS_BY_WALLETS[wallet] = contract.cicContract.unContractInstanceId;
+  contracts.slice(0, 3).forEach((contract, i) => {
+    const wallet = contract.cicWallet.getWalletId;
+    const contractId = contract.cicContract.unContractInstanceId;
+    CONTRACTS_BY_WALLETS[wallets[i]] = contractId;
   });
 
   // define SYMBOL
-  await pab.callContractEndpoint(CONTRACTS_BY_WALLETS[1], 'funds', []);
-  const status = await pab.getContractStatus(CONTRACTS_BY_WALLETS[1]);
+  await pab.callContractEndpoint(CONTRACTS_BY_WALLETS['Alice'], 'funds', []);
+  const status = await pab.getContractStatus(CONTRACTS_BY_WALLETS['Alice']);
   SYMBOL.unCurrencySymbol =
     status.cicCurrentState.observableState.Right.contents.getValue[1][0].unCurrencySymbol;
 };
@@ -36,7 +39,7 @@ const printFunds = async (contractId) => {
   const status = await getStatus(contractId, 'funds');
   const table = [];
 
-  status.cicCurrentState.observableState?.Right?.contents?.getValue.forEach(
+  status.cicCurrentState.observableState.Right.contents.getValue.forEach(
     ([{ unCurrencySymbol }, arr]) => {
       arr.forEach((el) => {
         table.push({
@@ -47,6 +50,7 @@ const printFunds = async (contractId) => {
       });
     }
   );
+
   if (table.length) console.table(table);
   else console.log('Result: no funds');
 };
@@ -55,13 +59,16 @@ const printPools = async (contractId) => {
   const status = await getStatus(contractId, 'pools');
   const table = [];
 
-  status.cicCurrentState.observableState?.Right?.contents?.[0]?.forEach((el) => {
-    table.push({
-      currencySymbol: el[0].unAssetClass[0].unCurrencySymbol,
-      tokenName: el[0].unAssetClass[1].unTokenName,
-      amount: el[1],
+  status.cicCurrentState.observableState.Right.contents.forEach((el) => {
+    el.forEach((el) => {
+      table.push({
+        currencySymbol: el[0].unAssetClass[0].unCurrencySymbol,
+        tokenName: el[0].unAssetClass[1].unTokenName,
+        amount: el[1],
+      });
     });
   });
+
   if (table.length) console.table(table);
   else console.log('Result: no pools');
 };
@@ -80,17 +87,11 @@ const callEndpoint = async (contractId, endpointName, args) => {
 
     console.log('SYMBOL: ', SYMBOL);
     console.log('Contract instances by wallets:');
-    Object.keys(CONTRACTS_BY_WALLETS).forEach((key) => {
-      console.log(`${key}: ${CONTRACTS_BY_WALLETS[key]}`);
-    });
-    console.log(`
-    wallet 1 belongs to Alice
-    wallet 2 belongs to Bob
-    wallet 3 belongs to Charlie`);
+    console.log(CONTRACTS_BY_WALLETS);
   });
 
   await printBlock('Check funds and pools of any wallet', async () => {
-    const CONTRACT = CONTRACTS_BY_WALLETS[3];
+    const CONTRACT = CONTRACTS_BY_WALLETS['Charlie'];
 
     await printFunds(CONTRACT);
     console.log('We see that we have A, B, C, D with 1 million each and 100,000 Ada.');
@@ -100,7 +101,7 @@ const callEndpoint = async (contractId, endpointName, args) => {
   });
 
   await printBlock('Alice', async () => {
-    const CONTRACT = CONTRACTS_BY_WALLETS[1];
+    const CONTRACT = CONTRACTS_BY_WALLETS['Alice'];
 
     console.log('Alice setting up a liquidity pool for 1000 tokens A and 2000 B tokens.');
     await callEndpoint(CONTRACT, 'create', { amountA: 1000, tokenA: 'A', amountB: 2000, tokenB: 'B' });
@@ -111,7 +112,7 @@ const callEndpoint = async (contractId, endpointName, args) => {
   });
 
   await printBlock('Bob', async () => {
-    const CONTRACT = CONTRACTS_BY_WALLETS[2];
+    const CONTRACT = CONTRACTS_BY_WALLETS['Bob'];
 
     console.log('Bob swaps 100A for Bs.');
     await callEndpoint(CONTRACT, 'swap', { amountA: 100, tokenA: 'A', tokenB: 'B' });
@@ -121,7 +122,7 @@ const callEndpoint = async (contractId, endpointName, args) => {
   });
 
   await printBlock('Charlie', async () => {
-    const CONTRACT = CONTRACTS_BY_WALLETS[3];
+    const CONTRACT = CONTRACTS_BY_WALLETS['Charlie'];
 
     console.log('Charlie adds liquidity.');
     await callEndpoint(CONTRACT, 'add', { amountA: 400, tokenA: 'A', amountB: 800, tokenB: 'B' });
@@ -132,7 +133,7 @@ const callEndpoint = async (contractId, endpointName, args) => {
   });
 
   await printBlock('Alice', async () => {
-    const CONTRACT = CONTRACTS_BY_WALLETS[1];
+    const CONTRACT = CONTRACTS_BY_WALLETS['Alice'];
 
     console.log('Alice wants to remove her liquidity. So let’s first query her funds.');
     await printFunds(CONTRACT);
@@ -147,7 +148,7 @@ const callEndpoint = async (contractId, endpointName, args) => {
   });
 
   await printBlock('Charlie', async () => {
-    const CONTRACT = CONTRACTS_BY_WALLETS[3];
+    const CONTRACT = CONTRACTS_BY_WALLETS['Charlie'];
 
     console.log('First check pools.');
     await printPools(CONTRACT);

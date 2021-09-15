@@ -34,14 +34,14 @@ export class Pab {
    * Activate contract.
    * @param {string} contractName - Contract name, that you get from calling `fullreport` or
    *                                `definitions` in field `csrDefinition`.
-   * @param {number} walletNumber - Wallet number, integer from 1 to 10.
+   * @param {string} walletId - Wallet Id.
    * @return {Promise<string>} - Promise fulfilled by the activated contract instance id.
    */
-  activateContract = (contractName: string, walletNumber: number): Promise<string> =>
+  activateContract = (contractName: string, walletId: string): Promise<string> =>
     this.axios
       .post(
         'api/contract/activate',
-        { caID: { tag: contractName }, caWallet: { getWallet: walletNumber } },
+        { caID: { tag: contractName }, caWallet: { getWalletId: walletId } },
         { headers: { 'Content-Type': 'application/json' } }
       )
       .then((res) => res.data.unContractInstanceId);
@@ -89,11 +89,11 @@ export class Pab {
 
   /**
    * Get all contract instances statuses by the wallet.
-   * @param {number} walletNumber - Wallet number, integer from 1 to 10.
+   * @param {string} walletId - Wallet Id.
    * @return {Promise<Array>} - Promise fulfilled by the wallet's contracts statuses array.
    */
-  getContractsByWallet = (walletNumber: number): Promise<ContractStatus[]> =>
-    this.axios.get(`api/contract/instances/wallet/${walletNumber}`).then((res) => res.data);
+  getContractsByWallet = (walletId: string): Promise<ContractStatus[]> =>
+    this.axios.get(`api/contract/instances/wallet/${walletId}`).then((res) => res.data);
 
   /**
    * Get all contract instances statuses by all wallets.

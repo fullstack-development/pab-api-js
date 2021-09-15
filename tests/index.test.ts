@@ -4,9 +4,9 @@ import { Pab } from '../src';
 
 const pab = new Pab('http://localhost:9080/');
 
-const WALLET = 1;
+const WALLET = '36cb1d44654c33ed6b26cbe2da0848de2ebfdb20010679a06c5f609c474f349b8003380446e9159a34504f9fd19da3e93f215efa30cae9455d441be0eac8db66291a5a5e8c961f9da5fb8cb616ab630a6600f4a44acd520fa701b330849e4446d7d1711ac606ae93a2b3d457dd7f4f36b3af92dd0de82a7caf471fb5ed2b5ea3';
 let CONTRACT_NAME;
-let CONTRACT_ID = '';
+let CONTRACT_ID;
 
 describe('Check endpoints and result structure', () => {
   beforeAll(async () => {
