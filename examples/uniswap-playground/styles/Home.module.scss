@@ -1,3 +1,4 @@
+@import './vars.scss';
 
 .content {
   display: grid;
@@ -15,9 +16,17 @@
     'actions logs';
 }
 
-.titleWrap {
-  grid-area: title;
-  text-align: center;
+.title {
+  &Wrap {
+    text-align: center;
+    grid-area: title;
+  }
+
+  &Note {
+    color: $grey;
+    font-size: 14px;
+    font-weight: normal;
+  }
 }
 
 .error {
@@ -29,9 +38,9 @@
 }
 
 .actions {
-  grid-area: actions;
   width: 100%;
   max-width: 400px;
+  grid-area: actions;
 }
 
 .logs {

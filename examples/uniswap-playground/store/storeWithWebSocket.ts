@@ -1,8 +1,8 @@
 import { makeAutoObservable } from 'mobx';
+import WebSocket from 'isomorphic-ws';
 import { Action, ActionRequestParams, Asset, CurrencySymbol, Log, Wallet } from 'types';
-import { getEndpointRequestBody } from 'utils/helpers';
-import { callEndpoint, pab } from 'utils/pab';
-import { StoreWithWebSocket } from './storeWithWebSocket';
+import { cutString, getEndpointRequestBody } from 'utils/helpers';
+import { callEndpointForWebSocket as callEndpoint, pab } from 'utils/pab';
 
 const SYMBOL: CurrencySymbol = {};
 
@@ -10,7 +10,7 @@ type LoadingModule = 'actions' | 'assets';
 type AssetsType = 'funds' | 'pools';
 type FundsByWallet = { [key: string]: Asset[] };
 
-class Store {
+class StoreWithWebSocket {
   loadings: { [key in LoadingModule]: boolean } = {
     actions: false,
     assets: true,
@@ -42,21 +42,10 @@ class Store {
       contracts.forEach((contract, i) => {
         const walletId = contract.cicWallet.getWalletId;
         this.addWallet({ id: walletId, contractId: contract.cicContract.unContractInstanceId });
-        if (i === 0) this.setCurrentWalletId(walletId);
+        if (i === 0) this.setcurrentWalletId(walletId);
       });
 
-      // define SYMBOL
-      const contractId = this.getContract();
-      const state = await callEndpoint(contractId, 'funds', []);
-      const symbol = state.observableState.Right.contents.getValue.find((el: any) =>
-        el[1].every((el: any) => ['A', 'B', 'C', 'D'].includes(el[0].unTokenName))
-      )?.[0].unCurrencySymbol;
-      if (!symbol) throw new Error(`SYMBOL: ${symbol}`);
-      this.addLog('SUCCESS', `SYMBOL: ${symbol}`);
-      SYMBOL.unCurrencySymbol = symbol;
-
-      await this.fetchAssets('funds');
-      await this.fetchAssets('pools');
+      this.createSockets();
     } catch (err: any) {
       this.setGlobalError('Initialization error');
       console.error(err);
@@ -85,6 +74,98 @@ class Store {
     );
   };
 
+  createSockets = () => {
+    this.wallets.forEach(({ id: walletId }) => {
+      const contractId = this.getContract(walletId);
+      const socket = pab.createSocket(contractId);
+      this.addSocketHandlers(socket, walletId);
+    });
+  };
+
+  addSocketHandlers = (socket: WebSocket, walletId: string) => {
+    socket.onopen = async () => {
+      if (walletId === this.currentWalletId) {
+        await this.fetchAssets('funds');
+        await this.fetchAssets('pools');
+      }
+    };
+
+    socket.onmessage = async (event) => {
+      const data = JSON.parse(String(event.data));
+      if (data.tag !== 'NewObservableState') return;
+      const { Right, Left } = data.contents;
+
+      if (Right) {
+        this.addLog('SUCCESS', `Tag "${Right.tag}", wallet ${cutString(walletId, 3, 3)}`);
+        const tag = Right.tag.toLowerCase();
+
+        // define SYMBOL, finish initialization
+        if (!SYMBOL.unCurrencySymbol && tag === 'funds') {
+          this.defineSYMBOL(Right);
+        }
+
+        if (tag === 'funds' || tag === 'pools') {
+          this.convertAndSetAssets(tag, Right, walletId);
+        } else {
+          await this.fetchAssets('funds');
+          await this.fetchAssets('pools');
+        }
+      }
+      if (Left) {
+        this.addLog('ERROR', Left);
+      }
+      this.setLoadingAll(false);
+    };
+
+    socket.onerror = (error: any) => {
+      this.addLog('ERROR', `WebSocket Error\n\n${error.message}`);
+    };
+  };
+
+  defineSYMBOL = (Right: any) => {
+    try {
+      const symbol = Right.contents.getValue.find((el: any) =>
+        ['A', 'B', 'C', 'D'].includes(el[1][0][0].unTokenName)
+      )?.[0].unCurrencySymbol;
+
+      if (!symbol) throw new Error(`SYMBOL: ${symbol}`);
+
+      SYMBOL.unCurrencySymbol = symbol;
+      this.addLog('SUCCESS', `Initialization is finished\n\nSYMBOL: ${symbol}`);
+    } catch (err: any) {
+      console.error(err);
+      this.addLog('ERROR', `Initialization error, SYMBOL not defined\n\n${err?.message}`);
+    }
+  };
+
+  convertAndSetAssets = (type: AssetsType, Right: any, walletId: string) => {
+    const assets: Asset[] = [];
+    if (type === 'funds') {
+      Right.contents.getValue.forEach(([{ unCurrencySymbol }, arr]: any) => {
+        arr.forEach((el: any) => {
+          assets.push({
+            currencySymbol: unCurrencySymbol,
+            tokenName: el[0].unTokenName,
+            amount: el[1],
+          });
+        });
+      });
+      this.fundsByWallet[walletId] = assets;
+    }
+    if (type === 'pools') {
+      Right.contents.forEach((el: any) => {
+        el.forEach((el: any) => {
+          assets.push({
+            currencySymbol: el[0].unAssetClass[0].unCurrencySymbol,
+            tokenName: el[0].unAssetClass[1].unTokenName,
+            amount: el[1],
+          });
+        });
+      });
+      this.pools = assets;
+    }
+  };
+
   addWallet = (wallet: Wallet) => {
     this.wallets.push(wallet);
   };
@@ -103,24 +184,16 @@ class Store {
     );
   };
 
-  setFunds = (walletId: string, funds: Asset[]) => {
-    this.fundsByWallet[walletId] = funds;
-  };
-
-  setPools = (pools: Asset[]) => {
-    this.pools = pools;
-  };
-
   addLog = (type: Log['type'], message: string) => {
     this.logs = [...this.logs, { type, message, time: new Date() }];
   };
 
-  setCurrentWalletId = (walletId: string) => {
+  setcurrentWalletId = (walletId: string) => {
     this.currentWalletId = walletId;
   };
 
   switchWallet = (walletId: string) => {
-    this.setCurrentWalletId(walletId);
+    this.setcurrentWalletId(walletId);
     this.fetchAssets('funds');
   };
 
@@ -132,62 +205,25 @@ class Store {
   };
 
   callAction = async (actionName: Action, params: ActionRequestParams) => {
-    this.setLoadingAll(true);
+    this.setLoading('actions', true);
     const contractId = this.getContract();
 
     try {
       const body = getEndpointRequestBody(actionName, params, SYMBOL);
       await callEndpoint(contractId, actionName, body);
-      this.addLog('SUCCESS', `Action "${actionName}"`);
-      this.setLoading('actions', false);
-
-      await this.fetchAssets('funds');
-      await this.fetchAssets('pools');
     } catch (err: any) {
       console.error(err);
       this.addLog('ERROR', `Action request: "${actionName}"\n\n${err?.message}`);
-      this.setLoadingAll(false);
     }
+    this.setLoading('actions', false);
   };
 
-  fetchAssets = async (type: AssetsType) => {
+  fetchAssets = async (type: 'funds' | 'pools') => {
     this.setLoading('assets', true);
-    const walletId = this.currentWalletId;
-    const contractId = this.getContract(walletId);
+    const contractId = this.getContract();
 
     try {
-      const state = await callEndpoint(contractId, type, []);
-      const assets: Asset[] = [];
-
-      if (type === 'funds') {
-        state.observableState.Right.contents.getValue.forEach(
-          ([{ unCurrencySymbol }, arr]: any) => {
-            arr.forEach((el: any) => {
-              assets.push({
-                currencySymbol: unCurrencySymbol,
-                tokenName: el[0].unTokenName,
-                amount: el[1],
-              });
-            });
-          }
-        );
-        this.setFunds(walletId, assets);
-      }
-
-      if (type === 'pools') {
-        state.observableState.Right.contents.forEach((el: any) => {
-          el.forEach((el: any) => {
-            assets.push({
-              currencySymbol: el[0].unAssetClass[0].unCurrencySymbol,
-              tokenName: el[0].unAssetClass[1].unTokenName,
-              amount: el[1],
-            });
-          });
-        });
-        this.setPools(assets);
-      }
-
-      this.addLog('SUCCESS', `Assets request: "${type}"`);
+      await callEndpoint(contractId, type, []);
     } catch (err: any) {
       console.error(err);
       this.addLog('ERROR', `Assets request: "${type}"\n\n${err?.message}`);
@@ -196,6 +232,4 @@ class Store {
   };
 }
 
-const store = process.env.NEXT_PUBLIC_WITH_WEBSOCKETS ? new StoreWithWebSocket() : new Store();
-
-export { store };
+export { StoreWithWebSocket };

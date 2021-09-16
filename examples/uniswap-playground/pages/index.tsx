@@ -7,6 +7,8 @@ import { store } from 'store';
 import { Actions, Assets, Logs, Wallets } from 'components';
 import s from '../styles/Home.module.scss';
 
+const withWebSockets = process.env.NEXT_PUBLIC_WITH_WEBSOCKETS;
+
 const Home: NextPage = observer(() => {
   const { globalError } = store;
 
@@ -27,7 +29,9 @@ const Home: NextPage = observer(() => {
       </Head>
       <div className={s.content}>
         <div className={s.titleWrap}>
-          <h1 className={s.title}>Uniswap</h1>
+          <h1 className={s.title}>
+            Uniswap {withWebSockets && <span className={s.titleNote}>with WebSockets</span>}
+          </h1>
           {globalError && <h2 className={s.error}>{globalError}</h2>}
         </div>
         <Wallets className={s.wallets} />
