@@ -4,6 +4,11 @@ export type Action = 'create' | 'swap' | 'add' | 'remove' | 'close';
 
 export type CurrencySymbol = { unCurrencySymbol?: string };
 
+export type Wallet = {
+  id: string;
+  contractId: string;
+};
+
 export type ActionRequestParams = {
   token1?: Token;
   token1Amount?: number;

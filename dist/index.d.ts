@@ -1,13 +1,16 @@
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
+import WebSocket from 'isomorphic-ws';
 import { FullReport, ContractStatus, ContractSchema } from './types';
 /** Class representing a PAB (Plutus Application Backend) API. */
 export declare class Pab {
     axios: AxiosInstance;
+    private sockets;
+    private socketURL;
     /**
-     * @param {string} host - The host of PAB.
+     * @param {string} baseURL - The base URL of PAB.
      * @param {Object} [axiosConfig={}] - A custom config for the axios instance.
      */
-    constructor(host: string, axiosConfig?: AxiosRequestConfig);
+    constructor(baseURL: string, axiosConfig?: AxiosRequestConfig);
     /**
      * Checks, if the PAB instance exists.
      * @return {Promise<boolean>} - Promise fulfilled by boolean.
@@ -69,5 +72,24 @@ export declare class Pab {
      * @return {Promise<Array>}
      */
     getContractsDefinitions: () => Promise<ContractSchema[]>;
+    /**
+     * Set base WebSockets URL.
+     * @param {string} url - Base URL for PAB WebSockets.
+     */
+    setSocketURL: (url: string) => void;
+    /**
+     * Create WebSocket connection.
+     * @param {string} [walletId=''] - Is optional. If walletId is passed, creates WebSocket
+     *                                 connection for this wallet.
+     * @return - WebSocket instance.
+     */
+    createSocket: (walletId?: string) => WebSocket;
+    /**
+     * Return the WebSocket instance.
+     * @param {string} [walletId=''] - Is optional. If walletId is passed, returns the WebSocket
+     *                                 instance for this wallet or undefined.
+     * @return - WebSocket instance or undefined.
+     */
+    getSocket: (walletId?: string) => WebSocket | undefined;
 }
 export * from './types';

@@ -1,16 +1,21 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+// import WebSocket from 'isomorphic-ws';
 import { FullReport, ContractStatus, ContractSchema } from './types';
 
 /** Class representing a PAB (Plutus Application Backend) API. */
 export class Pab {
   axios: AxiosInstance;
 
+  private sockets: { [key: string]: WebSocket } = {};
+
+  private socketURL: string;
+
   /**
-   * @param {string} host - The host of PAB.
+   * @param {string} baseURL - The base URL of PAB.
    * @param {Object} [axiosConfig={}] - A custom config for the axios instance.
    */
-  constructor(host: string, axiosConfig: AxiosRequestConfig = {}) {
-    this.axios = axios.create({ ...axiosConfig, baseURL: host });
+  constructor(baseURL: string, axiosConfig: AxiosRequestConfig = {}) {
+    this.axios = axios.create({ ...axiosConfig, baseURL });
   }
 
   /**
@@ -108,6 +113,37 @@ export class Pab {
    */
   getContractsDefinitions = (): Promise<ContractSchema[]> =>
     this.axios.get('api/contract/definitions').then((res) => res.data);
+
+  /**
+   * Set base WebSockets URL.
+   * @param {string} url - Base URL for PAB WebSockets.
+   */
+  setSocketURL = (url: string) => {
+    this.socketURL = url;
+  };
+
+  /**
+   * Create WebSocket connection.
+   * @param {string} [walletId=''] - Is optional. If walletId is passed, creates WebSocket
+   *                                 connection for this wallet.
+   * @return - WebSocket instance.
+   */
+  createSocket = (walletId: string = ''): WebSocket => {
+    const key = walletId || 'root';
+    if (!this.sockets[key]) this.sockets[key] = new WebSocket(`${this.socketURL}/${walletId}`);
+    return this.sockets[key];
+  };
+
+  /**
+   * Return the WebSocket instance.
+   * @param {string} [walletId=''] - Is optional. If walletId is passed, returns the WebSocket
+   *                                 instance for this wallet or undefined.
+   * @return - WebSocket instance or undefined.
+   */
+  getSocket = (walletId: string = ''): WebSocket | undefined => {
+    const key = walletId || 'root';
+    return this.sockets[key];
+  };
 }
 
 export * from './types';

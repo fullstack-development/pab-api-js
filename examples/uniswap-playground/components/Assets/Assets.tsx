@@ -7,7 +7,8 @@ import s from './Assets.module.scss';
 import { Loading } from 'components';
 
 const Assets = observer(({ className }: { className: string }) => {
-  const { funds, pools, loadings } = store;
+  const { fundsByWallet, pools, currentWalletId, loadings } = store;
+  const funds = fundsByWallet[currentWalletId] || [];
 
   return (
     <div className={cl(s.root, className)}>
