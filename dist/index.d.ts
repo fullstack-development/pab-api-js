@@ -79,17 +79,17 @@ export declare class Pab {
     setSocketURL: (url: string) => void;
     /**
      * Create WebSocket connection.
-     * @param {string} [walletId=''] - Is optional. If walletId is passed, creates WebSocket
-     *                                 connection for this wallet.
+     * @param {string} [contractId=''] - Is optional. If contractId is passed, creates WebSocket
+     *                                   connection for this contract instance.
      * @return - WebSocket instance.
      */
-    createSocket: (walletId?: string) => WebSocket;
+    createSocket: (contractId?: string) => WebSocket;
     /**
      * Return the WebSocket instance.
-     * @param {string} [walletId=''] - Is optional. If walletId is passed, returns the WebSocket
-     *                                 instance for this wallet or undefined.
+     * @param {string} [contractId=''] - Is optional. If contractId is passed, returns the WebSocket
+     *                                   instance for this contract instance or undefined.
      * @return - WebSocket instance or undefined.
      */
-    getSocket: (walletId?: string) => WebSocket | undefined;
+    getSocket: (contractId?: string) => WebSocket | undefined;
 }
 export * from './types';
