@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
-// import WebSocket from 'isomorphic-ws';
+import WebSocket from 'isomorphic-ws';
 import { FullReport, ContractStatus, ContractSchema } from './types';
 
 /** Class representing a PAB (Plutus Application Backend) API. */
@@ -124,24 +124,24 @@ export class Pab {
 
   /**
    * Create WebSocket connection.
-   * @param {string} [walletId=''] - Is optional. If walletId is passed, creates WebSocket
-   *                                 connection for this wallet.
+   * @param {string} [contractId=''] - Is optional. If contractId is passed, creates WebSocket
+   *                                   connection for this contract instance.
    * @return - WebSocket instance.
    */
-  createSocket = (walletId: string = ''): WebSocket => {
-    const key = walletId || 'root';
-    if (!this.sockets[key]) this.sockets[key] = new WebSocket(`${this.socketURL}/${walletId}`);
+  createSocket = (contractId: string = ''): WebSocket => {
+    const key = contractId || 'root';
+    if (!this.sockets[key]) this.sockets[key] = new WebSocket(`${this.socketURL}/${contractId}`);
     return this.sockets[key];
   };
 
   /**
    * Return the WebSocket instance.
-   * @param {string} [walletId=''] - Is optional. If walletId is passed, returns the WebSocket
-   *                                 instance for this wallet or undefined.
+   * @param {string} [contractId=''] - Is optional. If contractId is passed, returns the WebSocket
+   *                                   instance for this contract instance or undefined.
    * @return - WebSocket instance or undefined.
    */
-  getSocket = (walletId: string = ''): WebSocket | undefined => {
-    const key = walletId || 'root';
+  getSocket = (contractId: string = ''): WebSocket | undefined => {
+    const key = contractId || 'root';
     return this.sockets[key];
   };
 }

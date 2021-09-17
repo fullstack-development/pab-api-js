@@ -42,7 +42,7 @@ class StoreWithWebSocket {
       contracts.forEach((contract, i) => {
         const walletId = contract.cicWallet.getWalletId;
         this.addWallet({ id: walletId, contractId: contract.cicContract.unContractInstanceId });
-        if (i === 0) this.setcurrentWalletId(walletId);
+        if (i === 0) this.setCurrentWalletId(walletId);
       });
 
       this.createSockets();
@@ -188,12 +188,12 @@ class StoreWithWebSocket {
     this.logs = [...this.logs, { type, message, time: new Date() }];
   };
 
-  setcurrentWalletId = (walletId: string) => {
+  setCurrentWalletId = (walletId: string) => {
     this.currentWalletId = walletId;
   };
 
   switchWallet = (walletId: string) => {
-    this.setcurrentWalletId(walletId);
+    this.setCurrentWalletId(walletId);
     this.fetchAssets('funds');
   };
 
