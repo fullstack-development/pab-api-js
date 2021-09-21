@@ -40,6 +40,10 @@ To run the example, you first need to run plutus-pab from plutus repo ([link](ht
 
 The `examples/uniswap-playground` folder contains the Uniswap playground. Installation and usage - [README](https://github.com/fullstack-development/pab-api-js/tree/main/examples/uniswap-playground) 
 
+### Documentation
+
+To learn more about the uniswap example you can check the [documentation](./doc) folder.
+
 ## Development
 
 To bundle the result code, run
