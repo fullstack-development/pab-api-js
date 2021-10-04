@@ -337,14 +337,14 @@ const getStatus = async (contractId, endpointName) => {
 };
 ```
 
-If it is some kind of UUID that associates endpoint call with the received status, we will be able to get and process the correct result. Now we rely to delays and the fact that the endpoint name is equal to the tag in the observableState. This example is simple and linear, so everything works well. But in other cases, this can lead to errors:
-- tag in observableState.Right not the always same as endpoint name. For example for endpoint 'create' tag is 'Created'.
-- observableState.Left has no tag at all.
-- one of the our ideas was to compare status before endpoint call and after, and wait until it change, but this solution also has problems.
+### Important note
 
-So, if we have UUID, we can try to extend it with a method, that waits until endpoint call to complete and returns observableState synchronously. In can look something like [this](https://github.com/fullstack-development/pab-api-js/blob/main/examples/uniswap-playground/utils/pab/callEndpoint.ts).
+If it was some kind of UUID that associates endpoint call with the received status, we will be able to get and process the correct result. For now we rely on delays and on the fact that the endpoint name is equal with the tag in the observableState. This example is simple and linear, so everything works well. But in other cases, this can lead to errors:
+- Tag in `observableState.Right` may not be the same as endpoint name that was called before.
+- `observableState.Left` has no tag at all. It is just error message.
+- One of the solution would be to compare a status before the call and after, then wait until it is changed.
 
-The method is suitable for `funds` and `pools` endpoints as they don't require a body a simply work as getter processes.
+So if we had an UUID we could try to extend it with a method that waits up until the endpoint call to complete and return an observableState synchronously. In may look something like [this](https://github.com/fullstack-development/pab-api-js/blob/main/examples/uniswap-playground/utils/pab/callEndpoint.ts). The method is suitable for `funds` and `pools` endpoints as they don't require a body for simple work as getter processes.
 
 Now we can query pool status:
 

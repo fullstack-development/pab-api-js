@@ -195,6 +195,16 @@ Receive json payload
 { "contents": null, "tag": "ContractFinished" }
 ```
 
+## Benefits of web socket
+
+There are few key difference using web socket to fetch information on contract instances compare to using REST API:
+
+- With web sockets you can receive updates about changes in contract instances' state in real time;
+- You don't need to pull updated by calling API endpoint and then try to filter whether the data you received is updated or not and is related to your use-case. With web sockets it makes state management for your frontend application cleaner and straightforward;
+- For each contract instance you can create a separate web socket connection. Or you can use single web-socket connection and subscribe to multiple contracts to receive updates for. The difference would be on architecture solutions for your frontend application and how you want to manage updates.
+
+If you want to learn more about web socket API you can check [MDN Web documentation](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API#interfaces).
+
 ## Uniswap Playground WS
 
 You can also check the Uniswap playground with web-socket support. Simply run from `./examples/uniswap-playground`
