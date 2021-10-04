@@ -344,7 +344,7 @@ If it was some kind of UUID that associates endpoint call with the received stat
 - `observableState.Left` has no tag at all. It is just error message.
 - One of the solution would be to compare a status before the call and after, then wait until it is changed.
 
-So if we had an UUID we could try to extend it with a method that waits up until the endpoint call to complete and return an observableState synchronously. In may look something like [this](https://github.com/fullstack-development/pab-api-js/blob/main/examples/uniswap-playground/utils/pab/callEndpoint.ts). The method is suitable for `funds` and `pools` endpoints as they don't require a body for simple work as getter processes.
+So if we had an UUID we could try to extend it with a method that waits up until the endpoint call to complete and return an observableState synchronously. It may look something like [this](https://github.com/fullstack-development/pab-api-js/blob/main/examples/uniswap-playground/utils/pab/callEndpoint.ts).
 
 Now we can query pool status:
 
