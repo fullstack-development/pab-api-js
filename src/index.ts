@@ -3,12 +3,12 @@ import WebSocket from 'isomorphic-ws';
 import { FullReport, ContractStatus, ContractSchema } from './types';
 
 /** Class representing a PAB (Plutus Application Backend) API. */
-export class Pab {
+export class Pab<Status, State> {
   axios: AxiosInstance;
 
   private sockets: { [key: string]: WebSocket } = {};
 
-  private socketURL: string;
+  private socketURL = '';
 
   /**
    * @param {string} baseURL - The base URL of PAB.
@@ -32,7 +32,7 @@ export class Pab {
    * Get full information about the PAB instance.
    * @return {Promise<Object>} - Promise fulfilled by the full report object.
    */
-  getFullReport = (): Promise<FullReport> =>
+  getFullReport = (): Promise<FullReport<Status, State>> =>
     this.axios.get('api/fullreport').then((res) => res.data);
 
   /**
@@ -56,7 +56,7 @@ export class Pab {
    * @param {string} contractInstanceId - Contract instance id.
    * @return {Promise<Object>} - Promise fulfilled by the contract instance's status object.
    */
-  getContractStatus = (contractInstanceId: string): Promise<ContractStatus> =>
+  getContractStatus = (contractInstanceId: string): Promise<ContractStatus<Status, State>> =>
     this.axios.get(`api/contract/instance/${contractInstanceId}/status`).then((res) => res.data);
 
   /**
@@ -64,7 +64,7 @@ export class Pab {
    * @param {string} contractInstanceId - Contract instance id.
    * @return {Promise<Object>} - Promise fulfilled by the contract instance's schema object.
    */
-  getContractSchema = (contractInstanceId: string): Promise<ContractSchema> =>
+  getContractSchema = (contractInstanceId: string): Promise<ContractSchema<Status>> =>
     this.axios.get(`api/contract/instance/${contractInstanceId}/schema`).then((res) => res.data);
 
   /**
@@ -97,21 +97,21 @@ export class Pab {
    * @param {string} walletId - Wallet Id.
    * @return {Promise<Array>} - Promise fulfilled by the wallet's contracts statuses array.
    */
-  getContractsByWallet = (walletId: string): Promise<ContractStatus[]> =>
+  getContractsByWallet = (walletId: string): Promise<ContractStatus<Status, State>[]> =>
     this.axios.get(`api/contract/instances/wallet/${walletId}`).then((res) => res.data);
 
   /**
    * Get all contract instances statuses by all wallets.
    * @return {Promise<Array>} - Promise fulfilled by all wallets contracts statuses array.
    */
-  getContracts = (): Promise<ContractStatus[]> =>
+  getContracts = (): Promise<ContractStatus<Status, State>[]> =>
     this.axios.get('api/contract/instances').then((res) => res.data);
 
   /**
    * Get all contracts definitions.
    * @return {Promise<Array>}
    */
-  getContractsDefinitions = (): Promise<ContractSchema[]> =>
+  getContractsDefinitions = (): Promise<ContractSchema<Status>[]> =>
     this.axios.get('api/contract/definitions').then((res) => res.data);
 
   /**
