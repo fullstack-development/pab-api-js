@@ -83,8 +83,8 @@ export class Pab<
    */
   callContractEndpoint = <EndpointName extends string>(
     contractInstanceId: string,
-    endpointName: string,
-    data: EndpointsParams[EndpointName]
+    endpointName: EndpointName,
+    data: EndpointsParams[EndpointName] = [] as any
   ): Promise<void> =>
     this.axios.post(`api/contract/instance/${contractInstanceId}/endpoint/${endpointName}`, data, {
       headers: { 'Content-Type': 'application/json' },
