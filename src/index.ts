@@ -126,14 +126,15 @@ export class Pab<
    * Set base WebSockets URL.
    * @param {string} url - Base URL for PAB WebSockets.
    */
-   setSocketURL = (url: string) => {
+  setSocketURL = (url: string) => {
     this.socketURL = url;
   };
 
   /**
    * Create WebSocket connection.
    * @param {string} [contractId=''] - Is optional. If contractId is passed, creates WebSocket
-   *                                   connection for this contract instance.
+   *                                   connection for this contract instance, else - creates 
+   *                                   combined WebSocket connection.
    * @return - WebSocket instance.
    */
   createSocket = (contractId: string = ''): WebSocket => {
@@ -145,12 +146,33 @@ export class Pab<
   /**
    * Return the WebSocket instance.
    * @param {string} [contractId=''] - Is optional. If contractId is passed, returns the WebSocket
-   *                                   instance for this contract instance or undefined.
+   *                                   instance for this contract instance or undefined, else -
+   *                                   returns the combined WebSocket instance.
    * @return - WebSocket instance or undefined.
    */
   getSocket = (contractId: string = ''): WebSocket | undefined => {
     const key = contractId || 'root';
     return this.sockets[key];
+  };
+
+  /**
+   * Add handler for event `message` for the WebSocket instance.
+   * @param {string} [contractId=''] - Is optional. If contractId is passed, adds handler to the 
+   *                                   WebSocket instance by this contract instance, else - to the
+   *                                   combined WebSocket instance.
+   * @param {function} handleMessage - Callback for event `message`. Function with one argument,
+   *                                   witch is similar to `observableState` from `getContractStatus`
+   *                                   method;
+   */
+  addSocketMessageHandler = <K extends Status['tag']>(
+    contractId: string = '',
+    handleMessage: (contents: StatusToState[K]) => void
+  ) => {
+    const socket = this.getSocket(contractId);
+    socket.onmessage = (event) => {
+      const contents = JSON.parse(String(event.data)).contents;
+      handleMessage(contents);
+    };
   };
 }
 
