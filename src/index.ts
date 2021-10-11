@@ -3,7 +3,11 @@ import WebSocket from 'isomorphic-ws';
 import { FullReport, ContractStatus, ContractSchema, AnyHaskellADT } from './types';
 
 /** Class representing a PAB (Plutus Application Backend) API. */
-export class Pab<Status extends AnyHaskellADT, StatusToState extends Record<Status['tag'], unknown>> {
+export class Pab<
+  Status extends AnyHaskellADT,
+  StatusToState extends Record<Status['tag'], unknown>,
+  EndpointsParams extends Record<string, unknown>
+> {
   axios: AxiosInstance;
 
   private sockets: { [key: string]: WebSocket } = {};
@@ -56,7 +60,9 @@ export class Pab<Status extends AnyHaskellADT, StatusToState extends Record<Stat
    * @param {string} contractInstanceId - Contract instance id.
    * @return {Promise<Object>} - Promise fulfilled by the contract instance's status object.
    */
-  getContractStatus = <K extends Status['tag']>(contractInstanceId: string): Promise<ContractStatus<Status, StatusToState[K]>> =>
+  getContractStatus = <K extends Status['tag']>(
+    contractInstanceId: string
+  ): Promise<ContractStatus<Status, StatusToState[K]>> =>
     this.axios.get(`api/contract/instance/${contractInstanceId}/status`).then((res) => res.data);
 
   /**
@@ -75,10 +81,10 @@ export class Pab<Status extends AnyHaskellADT, StatusToState extends Record<Stat
    *                        contracts and endpoints. Relate to `schema` endpoint to know about this
    *                        endpoint data structure.
    */
-  callContractEndpoint = (
+  callContractEndpoint = <EndpointName extends string>(
     contractInstanceId: string,
     endpointName: string,
-    data: object = {}
+    data: EndpointsParams[EndpointName]
   ): Promise<void> =>
     this.axios.post(`api/contract/instance/${contractInstanceId}/endpoint/${endpointName}`, data, {
       headers: { 'Content-Type': 'application/json' },
@@ -97,7 +103,9 @@ export class Pab<Status extends AnyHaskellADT, StatusToState extends Record<Stat
    * @param {string} walletId - Wallet Id.
    * @return {Promise<Array>} - Promise fulfilled by the wallet's contracts statuses array.
    */
-  getContractsByWallet = (walletId: string): Promise<ContractStatus<Status, StatusToState[Status['tag']]>[]> =>
+  getContractsByWallet = (
+    walletId: string
+  ): Promise<ContractStatus<Status, StatusToState[Status['tag']]>[]> =>
     this.axios.get(`api/contract/instances/wallet/${walletId}`).then((res) => res.data);
 
   /**
@@ -118,7 +126,7 @@ export class Pab<Status extends AnyHaskellADT, StatusToState extends Record<Stat
    * Set base WebSockets URL.
    * @param {string} url - Base URL for PAB WebSockets.
    */
-  setSocketURL = (url: string) => {
+   setSocketURL = (url: string) => {
     this.socketURL = url;
   };
 
