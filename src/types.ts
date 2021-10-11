@@ -85,3 +85,5 @@ export type ContractStatus<Status, State> = {
   cicWallet: { getWalletId: string };
   cicDefinition: Status
 };
+
+export type AnyHaskellADT = { tag: string } | { tag: string, contents: unknown }

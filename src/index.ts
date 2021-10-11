@@ -1,14 +1,14 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import WebSocket from 'isomorphic-ws';
-import { FullReport, ContractStatus, ContractSchema } from './types';
+import { FullReport, ContractStatus, ContractSchema, AnyHaskellADT } from './types';
 
 /** Class representing a PAB (Plutus Application Backend) API. */
-export class Pab<Status extends { tag: string, contents?: any }, StatusToState extends Record<Status['tag'], unknown>> {
+export class Pab<Status extends AnyHaskellADT, StatusToState extends Record<Status['tag'], unknown>> {
   axios: AxiosInstance;
 
   private sockets: { [key: string]: WebSocket } = {};
 
-  private socketURL = '';
+  private socketURL: string;
 
   /**
    * @param {string} baseURL - The base URL of PAB.
