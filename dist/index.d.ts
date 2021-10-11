@@ -100,8 +100,9 @@ export declare class Pab<Status extends AnyHaskellADT, StatusToState extends Rec
      *                                   combined WebSocket instance.
      * @param {function} handleMessage - Callback for event `message`. Function with one argument,
      *                                   witch is similar to `observableState` from `getContractStatus`
-     *                                   method;
+     *                                   method.
+     * @return {function} - Function, that removes the event listener.
      */
-    addSocketMessageHandler: <K extends Status["tag"]>(contractId: string, handleMessage: (contents: StatusToState[K]) => void) => void;
+    addSocketMessageHandler: <K extends Status["tag"]>(contractId: string, handleMessage: (contents: StatusToState[K]) => void) => (() => void);
 }
 export * from './types';

@@ -133,7 +133,7 @@ export class Pab<
   /**
    * Create WebSocket connection.
    * @param {string} [contractId=''] - Is optional. If contractId is passed, creates WebSocket
-   *                                   connection for this contract instance, else - creates 
+   *                                   connection for this contract instance, else - creates
    *                                   combined WebSocket connection.
    * @return - WebSocket instance.
    */
@@ -157,22 +157,25 @@ export class Pab<
 
   /**
    * Add handler for event `message` for the WebSocket instance.
-   * @param {string} [contractId=''] - Is optional. If contractId is passed, adds handler to the 
+   * @param {string} [contractId=''] - Is optional. If contractId is passed, adds handler to the
    *                                   WebSocket instance by this contract instance, else - to the
    *                                   combined WebSocket instance.
    * @param {function} handleMessage - Callback for event `message`. Function with one argument,
    *                                   witch is similar to `observableState` from `getContractStatus`
-   *                                   method;
+   *                                   method.
+   * @return {function} - Function, that removes the event listener.
    */
   addSocketMessageHandler = <K extends Status['tag']>(
     contractId: string = '',
     handleMessage: (contents: StatusToState[K]) => void
-  ) => {
+  ): (() => void) => {
     const socket = this.getSocket(contractId);
-    socket.onmessage = (event) => {
+    const listener = (event: { data: any }) => {
       const contents = JSON.parse(String(event.data)).contents;
       handleMessage(contents);
     };
+    socket.addEventListener('message', listener);
+    return () => socket.removeEventListener('message', listener);
   };
 }
 
