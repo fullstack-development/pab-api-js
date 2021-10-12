@@ -210,10 +210,13 @@ export class Pab<
    * @return {function} - Function, that removes the event listener.
    */
   addSocketMessageHandler =
-    <K extends ContractType["tag"]>(contractId: string = "") =>
+    <K extends ContractType["tag"]>(contractId: string) =>
     (
       handleMessage: (contents: Endpoints[K][number]["response"]) => void
     ): (() => void) => {
+      if (contractId === "") {
+        throw new Error("Contract id should not be empty");
+      }
       const socket = this.getSocket(contractId);
       const listener = (event: { data: any }) => {
         const contents = JSON.parse(String(event.data));
