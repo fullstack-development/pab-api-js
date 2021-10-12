@@ -1,7 +1,7 @@
-export type FullReport = {
+export type FullReport<Status, State> = {
   contractReport: {
-    crAvailableContracts: ContractSchema[];
-    crActiveContractStates: ContractStateInFullReport[];
+    crAvailableContracts: ContractSchema<Status>[];
+    crActiveContractStates: ContractStateInFullReport<State>[];
   };
   chainReport: {
     utxoIndex: {
@@ -12,9 +12,9 @@ export type FullReport = {
   };
 };
 
-export type ContractSchema = {
+export type ContractSchema<Status> = {
   csrSchemas: EndpointSchema[];
-  csrDefinition: { tag: string };
+  csrDefinition: Status;
 };
 
 export type EndpointSchema = {
@@ -25,12 +25,12 @@ export type EndpointSchema = {
   endpointDescription: { getEndpointDescription: string };
 };
 
-export type ContractStateInFullReport = [
+export type ContractStateInFullReport<State> = [
   {
     unContractInstanceId: string;
   },
   {
-    observableState: any;
+    observableState: State;
     logs: ContractLog[];
     hooks: ContractHookInFullReport[];
     err: {
@@ -41,8 +41,8 @@ export type ContractStateInFullReport = [
   }
 ];
 
-export type ContractState = {
-  observableState: any;
+export type ContractState<State> = {
+  observableState: State;
   logs: ContractLog[];
   hooks: ContractHook[];
   err: {
@@ -77,14 +77,13 @@ export type ContractHook = {
   };
 };
 
-export type ContractStatus = {
-  cicCurrentState: ContractState;
+export type ContractStatus<Status, State> = {
+  cicCurrentState: ContractState<State>;
   cicContract: {
     unContractInstanceId: string;
   };
   cicWallet: { getWalletId: string };
-  cicDefinition: {
-    contents?: any; 
-    tag: string; 
-  };
+  cicDefinition: Status;
 };
+
+export type AnyHaskellADT = { tag: string } | { tag: string; contents: unknown };

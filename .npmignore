@@ -1,3 +1,4 @@
 tests/
 examples/
+doc/
 jest.config.js

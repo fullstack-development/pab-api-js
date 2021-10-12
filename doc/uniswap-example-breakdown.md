@@ -122,7 +122,7 @@ webserver: shutting down
 Install pab-api-js to your javascript project
 
 ```bash
-❯ npm install --save git+ssh://github.com/fullstack-development/pab-api-js.git
+❯ npm install --save git+https://github.com/fullstack-development/pab-api-js.git
 ```
 
 ## Link to example file

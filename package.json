@@ -5,7 +5,8 @@
   "scripts": {
     "build": "microbundle -f umd --no-sourcemap",
     "test": "jest --watch",
-    "example": "node examples/simple/index.js"
+    "example": "node examples/simple/index.js",
+    "format": "prettier --write src/**/*"
   },
   "author": "",
   "license": "Apache-2.0",
@@ -13,6 +14,7 @@
     "@types/jest": "^27.0.1",
     "jest": "^27.0.6",
     "microbundle": "^0.13.3",
+    "prettier": "2.4.1",
     "ts-jest": "^27.0.5",
     "typescript": "^4.3.5"
   },

@@ -5,7 +5,7 @@ JavaScript wrapper for PAB (Plutus Application Backend) API. Works in both the b
 ## Installation
 
 ```bash
-  npm install --save git+ssh://github.com/fullstack-development/pab-api-js.git
+  npm install --save git+https://github.com/fullstack-development/pab-api-js.git
 ```
 
 ## Usage
@@ -13,7 +13,7 @@ JavaScript wrapper for PAB (Plutus Application Backend) API. Works in both the b
 ```javascript
 import { Pab } from 'pab-api-js';
 
-const pab = new Pab('http://localhost:8080/');
+const pab = new Pab('http://localhost:9080/');
 
 const getReport = async () => {
   try {
@@ -50,6 +50,12 @@ To bundle the result code, run
 
 ```bash
   npm run build
+```
+
+To format code (in folder src)
+
+```bash
+  npm run format
 ```
 
 For tests, you first need to run PAB with any contract

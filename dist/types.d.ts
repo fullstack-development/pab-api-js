@@ -1,7 +1,7 @@
-export declare type FullReport = {
+export declare type FullReport<Status, State> = {
     contractReport: {
-        crAvailableContracts: ContractSchema[];
-        crActiveContractStates: ContractStateInFullReport[];
+        crAvailableContracts: ContractSchema<Status>[];
+        crActiveContractStates: ContractStateInFullReport<State>[];
     };
     chainReport: {
         utxoIndex: {
@@ -11,11 +11,9 @@ export declare type FullReport = {
         annotatedBlockchain: any[];
     };
 };
-export declare type ContractSchema = {
+export declare type ContractSchema<Status> = {
     csrSchemas: EndpointSchema[];
-    csrDefinition: {
-        tag: string;
-    };
+    csrDefinition: Status;
 };
 export declare type EndpointSchema = {
     argument: {
@@ -28,12 +26,12 @@ export declare type EndpointSchema = {
         getEndpointDescription: string;
     };
 };
-export declare type ContractStateInFullReport = [
+export declare type ContractStateInFullReport<State> = [
     {
         unContractInstanceId: string;
     },
     {
-        observableState: any;
+        observableState: State;
         logs: ContractLog[];
         hooks: ContractHookInFullReport[];
         err: {
@@ -43,8 +41,8 @@ export declare type ContractStateInFullReport = [
         lastLogs: ContractLog[];
     }
 ];
-export declare type ContractState = {
-    observableState: any;
+export declare type ContractState<State> = {
+    observableState: State;
     logs: ContractLog[];
     hooks: ContractHook[];
     err: {
@@ -75,16 +73,19 @@ export declare type ContractHook = {
         };
     };
 };
-export declare type ContractStatus = {
-    cicCurrentState: ContractState;
+export declare type ContractStatus<Status, State> = {
+    cicCurrentState: ContractState<State>;
     cicContract: {
         unContractInstanceId: string;
     };
     cicWallet: {
         getWalletId: string;
     };
-    cicDefinition: {
-        contents?: any;
-        tag: string;
-    };
+    cicDefinition: Status;
+};
+export declare type AnyHaskellADT = {
+    tag: string;
+} | {
+    tag: string;
+    contents: unknown;
 };
