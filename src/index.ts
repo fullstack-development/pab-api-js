@@ -81,6 +81,11 @@ export class Pab<
       .get(`api/contract/instance/${contractInstanceId}/status`)
       .then((res) => res.data);
 
+  /**
+   * Get the contract instance's observableState from status.
+   * @param {string} contractInstanceId - Contract instance id.
+   * @return {Promise<Object>} - Promise fulfilled by the contract instance's state object.
+   */
   getContractState = <K extends ContractType["tag"]>(
     contractInstanceId: string
   ): Promise<Endpoints[K][number]["response"]> =>
@@ -201,13 +206,8 @@ export class Pab<
 
   /**
    * Add handler for event `message` for the WebSocket instance.
-   * @param {string} [contractId=''] - Is optional. If contractId is passed, adds handler to the
-   *                                   WebSocket instance by this contract instance, else - to the
-   *                                   combined WebSocket instance.
-   * @param {function} handleMessage - Callback for event `message`. Function with one argument,
-   *                                   witch is similar to `observableState` from `getContractStatus`
-   *                                   method.
-   * @return {function} - Function, that removes the event listener.
+   * @param {string} contractId - The contract instance id to create WebSocket subscription.
+   * @return {Function} - Function, that accepts a message handler.
    */
   addSocketMessageHandler =
     <K extends ContractType["tag"]>(contractId: string) =>
@@ -227,6 +227,11 @@ export class Pab<
     };
 }
 
+/** 
+ * Helper function, that allows to connect the current contract instance with the correct types.
+ * @param {Object} pab - The instance of the Pab class.
+ * @return {Object} - Object with methods, related to the current contract instance.
+ */
 export const withInstanceId =
   <
     ContractType extends AnyHaskellADT,
