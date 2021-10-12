@@ -52,6 +52,12 @@ To bundle the result code, run
   npm run build
 ```
 
+To format code (in folder src)
+
+```bash
+  npm run format
+```
+
 For tests, you first need to run PAB with any contract
 
 ```bash

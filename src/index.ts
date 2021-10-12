@@ -1,11 +1,6 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
-import WebSocket from "isomorphic-ws";
-import {
-  FullReport,
-  ContractStatus,
-  ContractSchema,
-  AnyHaskellADT,
-} from "./types";
+import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import WebSocket from 'isomorphic-ws';
+import { FullReport, ContractStatus, ContractSchema, AnyHaskellADT } from './types';
 
 export type AnyEndpoint = {
   name: string;
@@ -16,7 +11,7 @@ export type AnyEndpoint = {
 /** Class representing a PAB (Plutus Application Backend) API. */
 export class Pab<
   ContractType extends AnyHaskellADT,
-  Endpoints extends Record<ContractType["tag"], AnyEndpoint[]>
+  Endpoints extends Record<ContractType['tag'], AnyEndpoint[]>
 > {
   axios: AxiosInstance;
 
@@ -26,7 +21,7 @@ export class Pab<
 
   /**
    * @param {string} baseURL - The base URL of PAB.
-   * @param {Object} [axiosConfig={}] - A custom config for the axios instance.
+   * @param {Object} [axiosConfig={}] - A custom config for the axios instance.s
    */
   constructor(baseURL: string, axiosConfig: AxiosRequestConfig = {}) {
     this.axios = axios.create({ ...axiosConfig, baseURL });
@@ -38,7 +33,7 @@ export class Pab<
    */
   checkPabExists = (): Promise<boolean> =>
     this.axios
-      .get("api/healthcheck")
+      .get('api/healthcheck')
       .then(() => true)
       .catch(() => false);
 
@@ -47,8 +42,8 @@ export class Pab<
    * @return {Promise<Object>} - Promise fulfilled by the full report object.
    */
   getFullReport = (): Promise<
-    FullReport<ContractType, Endpoints[ContractType["tag"]][number]["response"]>
-  > => this.axios.get("api/fullreport").then((res) => res.data);
+    FullReport<ContractType, Endpoints[ContractType['tag']][number]['response']>
+  > => this.axios.get('api/fullreport').then((res) => res.data);
 
   /**
    * Activate contract.
@@ -57,15 +52,15 @@ export class Pab<
    * @param {string} walletId - Wallet Id.
    * @return {Promise<string>} - Promise fulfilled by the activated contract instance id.
    */
-  activateContract = (
-    contractName: string,
-    walletId: string
-  ): Promise<string> =>
+  activateContract = (contractName: string, walletId: string): Promise<string> =>
     this.axios
       .post(
-        "api/contract/activate",
-        { caID: { tag: contractName }, caWallet: { getWalletId: walletId } },
-        { headers: { "Content-Type": "application/json" } }
+        'api/contract/activate',
+        {
+          caID: { tag: contractName },
+          caWallet: { getWalletId: walletId },
+        },
+        { headers: { 'Content-Type': 'application/json' } }
       )
       .then((res) => res.data.unContractInstanceId);
 
@@ -74,21 +69,19 @@ export class Pab<
    * @param {string} contractInstanceId - Contract instance id.
    * @return {Promise<Object>} - Promise fulfilled by the contract instance's status object.
    */
-  getContractStatus = <K extends ContractType["tag"]>(
+  getContractStatus = <K extends ContractType['tag']>(
     contractInstanceId: string
-  ): Promise<ContractStatus<ContractType, Endpoints[K][number]["response"]>> =>
-    this.axios
-      .get(`api/contract/instance/${contractInstanceId}/status`)
-      .then((res) => res.data);
+  ): Promise<ContractStatus<ContractType, Endpoints[K][number]['response']>> =>
+    this.axios.get(`api/contract/instance/${contractInstanceId}/status`).then((res) => res.data);
 
   /**
    * Get the contract instance's observableState from status.
    * @param {string} contractInstanceId - Contract instance id.
    * @return {Promise<Object>} - Promise fulfilled by the contract instance's state object.
    */
-  getContractState = <K extends ContractType["tag"]>(
+  getContractState = <K extends ContractType['tag']>(
     contractInstanceId: string
-  ): Promise<Endpoints[K][number]["response"]> =>
+  ): Promise<Endpoints[K][number]['response']> =>
     this.getContractStatus<K>(contractInstanceId).then(
       ({ cicCurrentState: { observableState } }) => observableState
     );
@@ -98,12 +91,8 @@ export class Pab<
    * @param {string} contractInstanceId - Contract instance id.
    * @return {Promise<Object>} - Promise fulfilled by the contract instance's schema object.
    */
-  getContractSchema = (
-    contractInstanceId: string
-  ): Promise<ContractSchema<ContractType>> =>
-    this.axios
-      .get(`api/contract/instance/${contractInstanceId}/schema`)
-      .then((res) => res.data);
+  getContractSchema = (contractInstanceId: string): Promise<ContractSchema<ContractType>> =>
+    this.axios.get(`api/contract/instance/${contractInstanceId}/schema`).then((res) => res.data);
 
   /**
    * Call the contract instance's endpoint.
@@ -114,16 +103,16 @@ export class Pab<
    *                        endpoint data structure.
    */
   callContractEndpoint =
-    <K extends ContractType["tag"]>(contractInstanceId: string) =>
-    <EndpointName extends Endpoints[K][number]["name"]>(
+    <K extends ContractType['tag']>(contractInstanceId: string) =>
+    <EndpointName extends Endpoints[K][number]['name']>(
       endpointName: EndpointName,
-      data: Extract<Endpoints[K][number], { name: EndpointName }>["params"]
+      data: Extract<Endpoints[K][number], { name: EndpointName }>['params']
     ): Promise<void> =>
       this.axios.post(
         `api/contract/instance/${contractInstanceId}/endpoint/${endpointName}`,
         data,
         {
-          headers: { "Content-Type": "application/json" },
+          headers: { 'Content-Type': 'application/json' },
         }
       );
 
@@ -142,33 +131,23 @@ export class Pab<
    */
   getContractsByWallet = (
     walletId: string
-  ): Promise<
-    ContractStatus<
-      ContractType,
-      Endpoints[ContractType["tag"]][number]["response"]
-    >[]
-  > =>
-    this.axios
-      .get(`api/contract/instances/wallet/${walletId}`)
-      .then((res) => res.data);
+  ): Promise<ContractStatus<ContractType, Endpoints[ContractType['tag']][number]['response']>[]> =>
+    this.axios.get(`api/contract/instances/wallet/${walletId}`).then((res) => res.data);
 
   /**
    * Get all contract instances statuses by all wallets.
    * @return {Promise<Array>} - Promise fulfilled by all wallets contracts statuses array.
    */
   getContracts = (): Promise<
-    ContractStatus<
-      ContractType,
-      Endpoints[ContractType["tag"]][number]["response"]
-    >[]
-  > => this.axios.get("api/contract/instances").then((res) => res.data);
+    ContractStatus<ContractType, Endpoints[ContractType['tag']][number]['response']>[]
+  > => this.axios.get('api/contract/instances').then((res) => res.data);
 
   /**
    * Get all contracts definitions.
    * @return {Promise<Array>}
    */
   getContractsDefinitions = (): Promise<ContractSchema<ContractType>[]> =>
-    this.axios.get("api/contract/definitions").then((res) => res.data);
+    this.axios.get('api/contract/definitions').then((res) => res.data);
 
   /**
    * Set base WebSockets URL.
@@ -185,10 +164,9 @@ export class Pab<
    *                                   combined WebSocket connection.
    * @return - WebSocket instance.
    */
-  createSocket = (contractId: string = ""): WebSocket => {
-    const key = contractId || "root";
-    if (!this.sockets[key])
-      this.sockets[key] = new WebSocket(`${this.socketURL}/${contractId}`);
+  createSocket = (contractId: string = ''): WebSocket => {
+    const key = contractId || 'root';
+    if (!this.sockets[key]) this.sockets[key] = new WebSocket(`${this.socketURL}/${contractId}`);
     return this.sockets[key];
   };
 
@@ -199,8 +177,8 @@ export class Pab<
    *                                   returns the combined WebSocket instance.
    * @return - WebSocket instance or undefined.
    */
-  getSocket = (contractId: string = ""): WebSocket => {
-    const key = contractId || "root";
+  getSocket = (contractId: string = ''): WebSocket => {
+    const key = contractId || 'root';
     return this.sockets[key];
   };
 
@@ -210,24 +188,22 @@ export class Pab<
    * @return {Function} - Function, that accepts a message handler.
    */
   addSocketMessageHandler =
-    <K extends ContractType["tag"]>(contractId: string) =>
-    (
-      handleMessage: (contents: Endpoints[K][number]["response"]) => void
-    ): (() => void) => {
-      if (contractId === "") {
-        throw new Error("Contract id should not be empty");
+    <K extends ContractType['tag']>(contractId: string) =>
+    (handleMessage: (contents: Endpoints[K][number]['response']) => void): (() => void) => {
+      if (contractId === '') {
+        throw new Error('Contract id should not be empty');
       }
       const socket = this.getSocket(contractId);
       const listener = (event: { data: any }) => {
         const contents = JSON.parse(String(event.data));
         handleMessage(contents);
       };
-      socket.addEventListener("message", listener);
-      return () => socket.removeEventListener("message", listener);
+      socket.addEventListener('message', listener);
+      return () => socket.removeEventListener('message', listener);
     };
 }
 
-/** 
+/**
  * Helper function, that allows to connect the current contract instance with the correct types.
  * @param {Object} pab - The instance of the Pab class.
  * @return {Object} - Object with methods, related to the current contract instance.
@@ -235,11 +211,11 @@ export class Pab<
 export const withInstanceId =
   <
     ContractType extends AnyHaskellADT,
-    Endpoints extends Record<ContractType["tag"], AnyEndpoint[]>
+    Endpoints extends Record<ContractType['tag'], AnyEndpoint[]>
   >(
     pab: Pab<ContractType, Endpoints>
   ) =>
-  <K extends ContractType["tag"]>(instanceId: string) => ({
+  <K extends ContractType['tag']>(instanceId: string) => ({
     getStatus: () => pab.getContractStatus<K>(instanceId),
     getState: () => pab.getContractState<K>(instanceId),
     getSchema: () => pab.getContractSchema(instanceId),
@@ -250,4 +226,4 @@ export const withInstanceId =
     subscribe: pab.addSocketMessageHandler<K>(instanceId),
   });
 
-export * from "./types";
+export * from './types';
