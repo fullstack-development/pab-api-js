@@ -1,7 +1,7 @@
 /// <reference types="ws" />
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
 import WebSocket from 'isomorphic-ws';
-import { FullReport, ContractStatus, ContractSchema, AnyHaskellADT } from './types';
+import { FullReport, ContractStatus, ContractSchema, AnyHaskellADT, SocketResponse } from './types';
 export declare type AnyEndpoint = {
     name: string;
     params: unknown;
@@ -56,10 +56,7 @@ export declare class Pab<ContractType extends AnyHaskellADT, Endpoints extends R
     /**
      * Call the contract instance's endpoint.
      * @param {string} contractInstanceId - Contract instance id.
-     * @param {string} endpointName - Action to call on this contract instance.
-     * @param {Object} data - The current endpoint parameters. Parameters are different for different
-     *                        contracts and endpoints. Relate to `schema` endpoint to know about this
-     *                        endpoint data structure.
+     * @return {Function} - Function, that accepts endpoint parameters.
      */
     callContractEndpoint: <K extends ContractType["tag"]>(contractInstanceId: string) => <EndpointName extends Endpoints[K][number]["name"]>(endpointName: EndpointName, data: Extract<Endpoints[K][number], {
         name: EndpointName;
@@ -112,7 +109,7 @@ export declare class Pab<ContractType extends AnyHaskellADT, Endpoints extends R
      * @param {string} contractId - The contract instance id to create WebSocket subscription.
      * @return {Function} - Function, that accepts a message handler.
      */
-    addSocketMessageHandler: <K extends ContractType["tag"]>(contractId: string) => (handleMessage: (contents: Endpoints[K][number]["response"]) => void) => (() => void);
+    addSocketMessageHandler: <K extends ContractType["tag"]>(contractId: string) => (handleMessage: (data: SocketResponse<Endpoints[K][number]["response"], Endpoints[K][number]["name"]>) => void) => (() => void);
 }
 /**
  * Helper function, that allows to connect the current contract instance with the correct types.
@@ -129,6 +126,6 @@ export declare const withInstanceId: <ContractType extends AnyHaskellADT, Endpoi
     stop: () => Promise<void>;
     createSocket: () => WebSocket;
     getSocket: () => WebSocket;
-    subscribe: (handleMessage: (contents: Endpoints[K][number]["response"]) => void) => (() => void);
+    subscribe: (handleMessage: (data: SocketResponse<Endpoints[K][number]["response"], Endpoints[K][number]["name"]>) => void) => (() => void);
 };
 export * from './types';

@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import WebSocket from 'isomorphic-ws';
-import { FullReport, ContractStatus, ContractSchema, AnyHaskellADT } from './types';
+import { FullReport, ContractStatus, ContractSchema, AnyHaskellADT, SocketResponse } from './types';
 
 export type AnyEndpoint = {
   name: string;
@@ -97,13 +97,17 @@ export class Pab<
   /**
    * Call the contract instance's endpoint.
    * @param {string} contractInstanceId - Contract instance id.
-   * @param {string} endpointName - Action to call on this contract instance.
-   * @param {Object} data - The current endpoint parameters. Parameters are different for different
-   *                        contracts and endpoints. Relate to `schema` endpoint to know about this
-   *                        endpoint data structure.
+   * @return {Function} - Function, that accepts endpoint parameters.
    */
   callContractEndpoint =
     <K extends ContractType['tag']>(contractInstanceId: string) =>
+    /**
+     * @param {string} endpointName - Action to call on this contract instance.
+     * @param {Object} data - The current endpoint parameters. Parameters are different for different
+     *                        contracts and endpoints. Relate to `schema` endpoint to know about this
+     *                        endpoint data structure.
+     * @return {Promise<void>}
+     */
     <EndpointName extends Endpoints[K][number]['name']>(
       endpointName: EndpointName,
       data: Extract<Endpoints[K][number], { name: EndpointName }>['params']
@@ -189,14 +193,22 @@ export class Pab<
    */
   addSocketMessageHandler =
     <K extends ContractType['tag']>(contractId: string) =>
-    (handleMessage: (contents: Endpoints[K][number]['response']) => void): (() => void) => {
+    /**
+     * @param {string} data - Data, received by WebSocket message event.
+     * @return {Function} - Function, that removes this WebSocket event handler.
+     */
+    (
+      handleMessage: (
+        data: SocketResponse<Endpoints[K][number]['response'], Endpoints[K][number]['name']>
+      ) => void
+    ): (() => void) => {
       if (contractId === '') {
         throw new Error('Contract id should not be empty');
       }
       const socket = this.getSocket(contractId);
       const listener = (event: { data: any }) => {
-        const contents = JSON.parse(String(event.data));
-        handleMessage(contents);
+        const data = JSON.parse(String(event.data));
+        handleMessage(data);
       };
       socket.addEventListener('message', listener);
       return () => socket.removeEventListener('message', listener);
