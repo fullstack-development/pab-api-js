@@ -89,3 +89,18 @@ export declare type AnyHaskellADT = {
     tag: string;
     contents: unknown;
 };
+export declare type SocketResponse<State, EndpointName> = {
+    tag: 'NewObservableState';
+    contents: State;
+} | {
+    tag: 'NewActiveEndpoints';
+    contents: {
+        aeMetadata: any;
+        aeDescription: {
+            getEndpointDescription: EndpointName;
+        };
+    }[];
+} | {
+    tag: 'ContractFinished';
+    contents: any;
+};
