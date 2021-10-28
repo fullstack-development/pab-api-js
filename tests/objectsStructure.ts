@@ -11,7 +11,7 @@ import {
   ContractHookInFullReport,
 } from '../src/types';
 
-const сontractError: ContractState['err'] = {
+const сontractError: ContractState<any>['err'] = {
   contents: expect.any(Object),
   tag: expect.any(String),
 };
@@ -41,7 +41,7 @@ const contractHookInFullReport: ContractHookInFullReport = {
   },
 };
 
-const сontractStateInFullReport: ContractStateInFullReport = [
+const сontractStateInFullReport: ContractStateInFullReport<any> = [
   {
     unContractInstanceId: expect.any(String),
   },
@@ -54,7 +54,7 @@ const сontractStateInFullReport: ContractStateInFullReport = [
   },
 ];
 
-const contractState: ContractState = {
+const contractState: ContractState<any> = {
   observableState: expect.anyOrNull(Object),
   logs: expect.toEqualInArray(сontractLog),
   hooks: expect.toEqualInArray(contractHook),
@@ -71,12 +71,12 @@ const endpointSchema: EndpointSchema = {
   },
 };
 
-export const contractSchema: ContractSchema = {
+export const contractSchema: ContractSchema<any> = {
   csrSchemas: expect.toMatchInArray(endpointSchema),
   csrDefinition: { tag: expect.any(String) },
 };
 
-export const fullReport: FullReport = {
+export const fullReport: FullReport<any, any> = {
   contractReport: {
     crAvailableContracts: expect.toEqualInArray(contractSchema),
     crActiveContractStates: expect.toEqualInArray(сontractStateInFullReport),
@@ -90,7 +90,7 @@ export const fullReport: FullReport = {
   },
 };
 
-export const contractStatus: ContractStatus = {
+export const contractStatus: ContractStatus<any, any> = {
   cicCurrentState: contractState,
   cicContract: {
     unContractInstanceId: expect.any(String),

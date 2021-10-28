@@ -41,6 +41,7 @@ class Store {
       const contracts = await pab.getContracts();
       contracts.forEach((contract, i) => {
         const walletId = contract.cicWallet.getWalletId;
+        if (this.wallets.find(wallet => wallet.id === walletId)) return;
         this.addWallet({ id: walletId, contractId: contract.cicContract.unContractInstanceId });
         if (i === 0) this.setCurrentWalletId(walletId);
       });

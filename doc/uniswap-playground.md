@@ -20,7 +20,7 @@ Uniswap playground is another example of using Uniswap contract and pab-api-js l
 
 ## Run
 
-To test the playground, you first need to run PAB from lesson 10 of plutus-pioneer-program ([link](https://github.com/input-output-hk/plutus-pioneer-program)) or plutus-pab from plutus repo ([link](https://github.com/input-output-hk/plutus/tree/master/plutus-pab)), command `cabal run plutus-uniswap`.
+To test the playground, you first need to run PAB from lesson 10 of plutus-pioneer-program ([link](https://github.com/input-output-hk/plutus-pioneer-program)) or plutus-pab from plutus repo ([link](https://github.com/input-output-hk/plutus-apps/tree/main/plutus-pab), tag: `71a0805f`), command `cabal run plutus-uniswap`.
 
 ```bash
 ❯ npm run dev
