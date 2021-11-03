@@ -10,7 +10,7 @@ Example using pab-api-js and uniswap contract
 
 ## Run
 
-To run the playground, you first need to run plutus-pab from plutus repo ([link](https://github.com/input-output-hk/plutus/tree/master/plutus-pab)), command `cabal run plutus-uniswap`. It has two modes - with simple queries and with WebSockets.
+To run the playground, you first need to run plutus-pab from plutus repo ([link](https://github.com/input-output-hk/plutus-apps/tree/main/plutus-pab), tag: `71a0805f`), command `cabal run plutus-uniswap`. It has two modes - with simple queries and with WebSockets.
 
 To run with simple queries:
 ```bash

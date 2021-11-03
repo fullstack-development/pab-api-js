@@ -32,7 +32,7 @@ getReport();
 
 In folder `examples/simple` there is an example of using this lib with Uniswap-clone contract. It repeats steps from [lesson 10](https://plutus-pioneer-program.readthedocs.io/en/latest/pioneer/week10.html) of the plutus-pioneer-program. 
 
-To run the example, you first need to run plutus-pab from plutus repo ([link](https://github.com/input-output-hk/plutus/tree/master/plutus-pab)), command `cabal run plutus-uniswap`.
+To run the example, you first need to run plutus-pab from plutus repo ([link](https://github.com/input-output-hk/plutus-apps/tree/main/plutus-pab), tag: `71a0805f`), command `cabal run plutus-uniswap`.
 
 ```bash
   npm run example

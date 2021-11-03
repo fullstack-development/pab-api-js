@@ -127,7 +127,7 @@ Install pab-api-js to your javascript project
 
 ## Link to example file
 
-[https://github.com/fullstack-development/pab-api-js/blob/main/example/index.js](https://github.com/fullstack-development/pab-api-js/blob/main/example/index.js)
+[https://github.com/fullstack-development/pab-api-js/blob/main/examples/simple/index.js](https://github.com/fullstack-development/pab-api-js/blob/main/examples/simple/index.js)
 
 ## Run example
 
@@ -215,9 +215,10 @@ const { Pab } = require('pab-api-js');
 const pab = new Pab('http://localhost:9080/');
 
 // Declare helper variables to hold information on AssetClass
-// and contract instance ids
+// and wallets with contract instance ids
 const SYMBOL = {};
-const CONTRACTS_BY_WALLETS = {};
+const WALLETS = [];
+const walletsNames = ['Alice', 'Bob', 'Charlie', 'Mary'];
 ```
 
 ## Get a list of contract instance ids
@@ -232,29 +233,37 @@ Now we need to iterate on the list of contracts and match them with our wallets:
 
 ```jsx
 contracts.forEach((contract) => {
-  const wallet = contract.cicWallet.getWallet;
-  CONTRACTS_BY_WALLETS[wallet] = contract.cicContract.unContractInstanceId;
+  const walletId = contract.cicWallet.getWalletId;
+  const contractId = contract.cicContract.unContractInstanceId;
+  if (WALLETS.some(({ id }) => id === walletId)) return;
+  WALLETS.push({
+    id: walletId,
+    contractId,
+    name: walletsNames[WALLETS.length],
+  });
 });
 ```
 
 ## Get currency symbol
 
-Another thing that we need to do before we can start interacting with Uniswap contract is to record the Currency Symbol for tokens. We can do this by calling a `funds` endpoint. Let's find out what assets Wallet 1 holds:
+Another thing that we need to do before we can start interacting with Uniswap contract is to record the Currency Symbol for tokens. We can do this by calling a `funds` endpoint. Let's find out what assets first wallet holds:
 
 ```jsx
-await pab.callContractEndpoint(CONTRACTS_BY_WALLETS[1], 'funds', []);
+const someContract = getContract('Alice');
+await pab.callContractEndpoint(someContract)('funds', []);
 ```
 
 The `callContractEndpoint` doesn't return the state of the blockchain in sync way. To get the latest state of a contract instance you need to poll for update state by calling `getContractStatus`:
 
 ```jsx
-const status = await pab.getContractStatus(CONTRACTS_BY_WALLETS[1]);
+const status = await pab.getContractStatus(someContract);
 
-SYMBOL.unCurrencySymbol =
-    status.cicCurrentState.observableState.Right.contents.getValue[1][0].unCurrencySymbol;
+SYMBOL.unCurrencySymbol = status.cicCurrentState.observableState.Right.contents.getValue.find(
+  (el) => el[1].every((el) => ['A', 'B', 'C', 'D'].includes(el[0].unTokenName))
+)?.[0].unCurrencySymbol;
 ```
 
-And by that we get information on Wallet 1 assets that it holds:
+And by that we get information on Alice Wallet assets that it holds:
 
 ```jsx
 > JSON.stringify(status, null)
@@ -315,24 +324,13 @@ First let's check that we don't have any pool created on the blockchain. We will
 // contractId - is a contract Id of current wallet
 // endpointName - is "pools" or "funds"
 const getStatus = async (contractId, endpointName) => {
-  // Make delay, beacause if previous endpoint request is not over,
+  // Make delay, because if previous endpoint request is not over,
 	// we'll get error 500
 	await makeDelay(2000);
-  let status;
+  await pab.callContractEndpoint(contractId)(endpointName, []);
 
-	// In the first iteration, the status is undefined. So we won't go check.
-	// In next, we check, that tag is similar to endpointName.
-	// If true, finish the loop and return the resulting status.
-  while (status?.cicCurrentState?.observableState?.Right?.tag?.toLowerCase() !== endpointName) {
-    await pab.callContractEndpoint(contractId, endpointName, []);
-
-		// Wait a while for the observableState in status to update. 
-		// If this did not happen, the loop will continue
-    await makeDelay(1000);
-
-		// Then get status and write it into variable.
-    status = await pab.getContractStatus(contractId);
-  }
+  // Make delay again and get status, witch contains list of pools or funds
+  const status = await pab.getContractStatus(contractId);
   return status;
 };
 ```
@@ -353,13 +351,16 @@ const printPools = async (contractId) => {
   const status = await getStatus(contractId, 'pools');
   const table = [];
 
-  status.cicCurrentState.observableState?.Right?.contents?.[0]?.forEach((el) => {
-    table.push({
-      currencySymbol: el[0].unAssetClass[0].unCurrencySymbol,
-      tokenName: el[0].unAssetClass[1].unTokenName,
-      amount: el[1],
+  status.cicCurrentState.observableState.Right.contents.forEach((el) => {
+    el.forEach((el) => {
+      table.push({
+        currencySymbol: el[0].unAssetClass[0].unCurrencySymbol,
+        tokenName: el[0].unAssetClass[1].unTokenName,
+        amount: el[1],
+      });
     });
   });
+
   if (table.length) console.table(table);
   else console.log('Result: no pools');
 };
@@ -367,7 +368,7 @@ const printPools = async (contractId) => {
 
 ## Make a swap
 
-Let's make swap for 100 A tokens for B for 2 Wallet:
+Let's make swap for 100 A tokens for B for Bob's Wallet:
 
 ```jsx
 const body = {
@@ -377,9 +378,9 @@ const body = {
     spCoinB: { unAssetClass: [SYMBOL, { unTokenName: "B" }] },
 }
 
-await pab.callContractEndpoint(CONTRACTS_BY_WALLETS[2], "swap", body);
-
-> await printFunds(CONTRACTS_BY_WALLETS[2]);
+const CONTRACT = getContract('Bob');
+await callAction(CONTRACT, 'swap', body);
+> await printFunds(CONTRACT);
 
 {
   "cicCurrentState": {
@@ -434,9 +435,9 @@ const body = {
   apCoinB: { unAssetClass: [SYMBOL, { unTokenName: "B" }] },
 }
 
-await pab.callContractEndpoint(CONTRACTS_BY_WALLETS[3], "add", body);
-
-> await printFunds(CONTRACTS_BY_WALLETS[3]);
+const CONTRACT = getContract('Charlie');
+await callAction(CONTRACT, 'add', body);
+> await printPools(CONTRACT);
 
 {
   "cicCurrentState": {
@@ -494,7 +495,8 @@ await pab.callContractEndpoint(CONTRACTS_BY_WALLETS[3], "add", body);
 We can also close burn tokens from the pool. Let's assume that Wallet 1 decided to remove it's liquidity from the pool. First we need to know how many liquidity tokens does it have:
 
 ```jsx
-> await printFunds(CONTRACTS_BY_WALLETS[1]);
+const CONTRACT = getContract('Alice');
+> await printFunds(CONTRACT);
 
 {
   "cicCurrentState": {
@@ -546,9 +548,9 @@ const body = {
   rpCoinB: { unAssetClass: [SYMBOL, { unTokenName: "B" }] },
 }
 
-await pab.callContractEndpoint(CONTRACTS_BY_WALLETS[1], "remove", body)
+await callAction(CONTRACT, 'remove', body);
 
-> await printFunds(CONTRACTS_BY_WALLETS[1]);
+> await printFunds(CONTRACT);
 
 {
   "cicCurrentState": {

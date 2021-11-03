@@ -17,7 +17,7 @@ const callEndpointForWebSocket = async (
     try {
       if (isTimeoutError) throw new Error('Timeout error. Failed to call endpoint');
 
-      await pab.callContractEndpoint(contractInstanceId, endpointName, data);
+      await pab.callContractEndpoint(contractInstanceId)(endpointName, data);
       isSent = true;
     } catch (err: any) {
       if (err.response?.status >= 500) {

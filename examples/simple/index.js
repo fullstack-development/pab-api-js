@@ -4,34 +4,38 @@ const { Pab } = require('../../');
 const pab = new Pab('http://localhost:9080/');
 
 const SYMBOL = {};
-const CONTRACTS_BY_WALLETS = {};
+const WALLETS = [];
 
-const wallets = ['Alice', 'Bob', 'Charlie'];
+const walletsNames = ['Alice', 'Bob', 'Charlie', 'Mary'];
 
 const initConsts = async () => {
+  // define wallets and contracts ids
   const contracts = await pab.getContracts();
-  contracts.slice(0, 3).forEach((contract, i) => {
-    const wallet = contract.cicWallet.getWalletId;
+  contracts.forEach((contract) => {
+    const walletId = contract.cicWallet.getWalletId;
     const contractId = contract.cicContract.unContractInstanceId;
-    CONTRACTS_BY_WALLETS[wallets[i]] = contractId;
+    if (WALLETS.some(({ id }) => id === walletId)) return;
+    WALLETS.push({
+      id: walletId,
+      contractId,
+      name: walletsNames[WALLETS.length],
+    });
   });
 
   // define SYMBOL
-  await pab.callContractEndpoint(CONTRACTS_BY_WALLETS['Alice'], 'funds', []);
-  const status = await pab.getContractStatus(CONTRACTS_BY_WALLETS['Alice']);
-  SYMBOL.unCurrencySymbol =
-    status.cicCurrentState.observableState.Right.contents.getValue[1][0].unCurrencySymbol;
+  const someContract = getContract('Alice');
+  await pab.callContractEndpoint(someContract)('funds', []);
+  const status = await pab.getContractStatus(someContract);
+  SYMBOL.unCurrencySymbol = status.cicCurrentState.observableState.Right.contents.getValue.find(
+    (el) => el[1].every((el) => ['A', 'B', 'C', 'D'].includes(el[0].unTokenName))
+  )?.[0].unCurrencySymbol;
 };
 
 const getStatus = async (contractId, endpointName) => {
   await makeDelay(2000);
-  let status;
-
-  while (status?.cicCurrentState?.observableState?.Right?.tag?.toLowerCase() !== endpointName) {
-    await pab.callContractEndpoint(contractId, endpointName, []);
-    await makeDelay(1000);
-    status = await pab.getContractStatus(contractId);
-  }
+  await pab.callContractEndpoint(contractId)(endpointName, []);
+  await makeDelay(2000);
+  const status = await pab.getContractStatus(contractId);
   return status;
 };
 
@@ -73,11 +77,13 @@ const printPools = async (contractId) => {
   else console.log('Result: no pools');
 };
 
-const callEndpoint = async (contractId, endpointName, args) => {
+const callAction = async (contractId, endpointName, args) => {
   const body = getBody(endpointName, args, SYMBOL);
   printEndpoint(endpointName, body);
-  await pab.callContractEndpoint(contractId, endpointName, body);
+  await pab.callContractEndpoint(contractId)(endpointName, body);
 };
+
+const getContract = (walletName) => WALLETS.find(({ name }) => name === walletName).contractId;
 
 (async () => {
   await printTitle('UNISWAP EXAMPLE');
@@ -87,11 +93,11 @@ const callEndpoint = async (contractId, endpointName, args) => {
 
     console.log('SYMBOL: ', SYMBOL);
     console.log('Contract instances by wallets:');
-    console.log(CONTRACTS_BY_WALLETS);
+    console.log(WALLETS);
   });
 
   await printBlock('Check funds and pools of any wallet', async () => {
-    const CONTRACT = CONTRACTS_BY_WALLETS['Charlie'];
+    const CONTRACT = getContract('Charlie');
 
     await printFunds(CONTRACT);
     console.log('We see that we have A, B, C, D with 1 million each and 100,000 Ada.');
@@ -101,10 +107,10 @@ const callEndpoint = async (contractId, endpointName, args) => {
   });
 
   await printBlock('Alice', async () => {
-    const CONTRACT = CONTRACTS_BY_WALLETS['Alice'];
+    const CONTRACT = getContract('Alice');
 
     console.log('Alice setting up a liquidity pool for 1000 tokens A and 2000 B tokens.');
-    await callEndpoint(CONTRACT, 'create', { amountA: 1000, tokenA: 'A', amountB: 2000, tokenB: 'B' });
+    await callAction(CONTRACT, 'create', { amountA: 1000, tokenA: 'A', amountB: 2000, tokenB: 'B' });
 
     console.log('Query for pools.');
     await printPools(CONTRACT);
@@ -112,20 +118,20 @@ const callEndpoint = async (contractId, endpointName, args) => {
   });
 
   await printBlock('Bob', async () => {
-    const CONTRACT = CONTRACTS_BY_WALLETS['Bob'];
+    const CONTRACT = getContract('Bob');
 
     console.log('Bob swaps 100A for Bs.');
-    await callEndpoint(CONTRACT, 'swap', { amountA: 100, tokenA: 'A', tokenB: 'B' });
+    await callAction(CONTRACT, 'swap', { amountA: 100, tokenA: 'A', tokenB: 'B' });
 
     console.log('Let’s check how many funds Bob now has. As expected, he has 100 fewer As and 181 as many Bs.');
     await printFunds(CONTRACT);
   });
 
   await printBlock('Charlie', async () => {
-    const CONTRACT = CONTRACTS_BY_WALLETS['Charlie'];
+    const CONTRACT = getContract('Charlie');
 
     console.log('Charlie adds liquidity.');
-    await callEndpoint(CONTRACT, 'add', { amountA: 400, tokenA: 'A', amountB: 800, tokenB: 'B' });
+    await callAction(CONTRACT, 'add', { amountA: 400, tokenA: 'A', amountB: 800, tokenB: 'B' });
 
     console.log('Check the pools.');
     await printPools(CONTRACT);
@@ -133,14 +139,14 @@ const callEndpoint = async (contractId, endpointName, args) => {
   });
 
   await printBlock('Alice', async () => {
-    const CONTRACT = CONTRACTS_BY_WALLETS['Alice'];
+    const CONTRACT = getContract('Alice');
 
     console.log('Alice wants to remove her liquidity. So let’s first query her funds.');
     await printFunds(CONTRACT);
     console.log('So she has less A and Bs now because she provided them as liquidity for the pool, but she has 1415 of the liquidity token.');
 
     console.log('Alice burns liquidity tokens and get tokens in exchange.');
-    await callEndpoint(CONTRACT, 'remove', { tokens: 1415, tokenA: 'A', tokenB: 'B' });
+    await callAction(CONTRACT, 'remove', { tokens: 1415, tokenA: 'A', tokenB: 'B' });
 
     console.log('And let’s query her funds again.');
     await printFunds(CONTRACT);
@@ -148,13 +154,13 @@ const callEndpoint = async (contractId, endpointName, args) => {
   });
 
   await printBlock('Charlie', async () => {
-    const CONTRACT = CONTRACTS_BY_WALLETS['Charlie'];
+    const CONTRACT = getContract('Charlie');
 
     console.log('First check pools.');
     await printPools(CONTRACT);
 
     console.log('Charlie closes the pool.');
-    await callEndpoint(CONTRACT, 'close', { tokenA: 'A', tokenB: 'B' });
+    await callAction(CONTRACT, 'close', { tokenA: 'A', tokenB: 'B' });
 
     console.log('And if now we look for pools, then again, we don’t get any. ');
     await printPools(CONTRACT);
