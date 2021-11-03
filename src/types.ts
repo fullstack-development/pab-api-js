@@ -1,15 +1,11 @@
+import { ChainReport } from './generated/chainReport';
+
 export type FullReport<Status, State> = {
   contractReport: {
     crAvailableContracts: ContractSchema<Status>[];
     crActiveContractStates: ContractStateInFullReport<State>[];
   };
-  chainReport: {
-    utxoIndex: {
-      getIndex: any[];
-    };
-    transactionMap: any[];
-    annotatedBlockchain: any[];
-  };
+  chainReport: ChainReport;
 };
 
 export type ContractSchema<Status> = {
@@ -54,7 +50,7 @@ export type ContractState<State> = {
 
 export type ContractLog = {
   _logMessageContent: string;
-  _logLevel: 'Info' | 'Warning' | any;
+  _logLevel: 'Info' | 'Warning' | 'Error' | 'Debug';
 };
 
 export type ContractHookInFullReport = {
