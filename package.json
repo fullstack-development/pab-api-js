@@ -5,7 +5,6 @@
   "scripts": {
     "build": "microbundle -f umd --no-sourcemap",
     "test": "jest --watch",
-    "example": "node examples/simple/index.js",
     "format": "prettier --write src/**/*"
   },
   "author": "",
