@@ -1,4 +1,4 @@
-import { ChainReport } from './generated/chainReport';
+import { BuiltinData, ChainReport } from './generated/chainReport';
 
 export type FullReport<Status, State> = {
   contractReport: {
@@ -36,6 +36,41 @@ export type ContractStateInFullReport<State> = [
     lastLogs: ContractLog[];
   }
 ];
+
+export type SpendingRedeemer = {
+  purpose: 'spending';
+  data: BuiltinData;
+  input: {
+    id: string;
+    index: number;
+  };
+};
+
+export type MintingRedeemer = {
+  purpose: 'minting';
+  data: BuiltinData;
+  policy_id: string;
+};
+
+export type ExportTxRedeemer = SpendingRedeemer | MintingRedeemer;
+
+export type ExportTxInput = {
+  id: string;
+  index: number;
+  address: string;
+  amount: {
+    quantity: number;
+    unit: 'lovelace';
+  };
+  datum: string;
+  assets: { policy_id: string; asset_name: string; quantity: number }[];
+};
+
+export type ExportTx = {
+  transaction: string;
+  redeemers: ExportTxRedeemer[];
+  inputs: ExportTxInput[];
+};
 
 export type ContractState<State> = {
   observableState: State;
@@ -80,6 +115,7 @@ export type ContractStatus<Status, State> = {
   };
   cicWallet: { getWalletId: string };
   cicDefinition: Status;
+  cicYieldedExportTxs: ExportTx[]
 };
 
 export type AnyHaskellADT = { tag: string } | { tag: string; contents: unknown };
