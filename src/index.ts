@@ -57,7 +57,7 @@ export class Pab<
       .post(
         'api/contract/activate',
         {
-          caID: { tag: contractName },
+          caID: contractName,
           caWallet: { getWalletId: walletId },
         },
         { headers: { 'Content-Type': 'application/json' } }
