@@ -54,6 +54,8 @@ export type MintingRedeemer = {
 
 export type ExportTxRedeemer = SpendingRedeemer | MintingRedeemer;
 
+export type AssetClass = { policy_id: string; asset_name: string; quantity: number };
+
 export type ExportTxInput = {
   id: string;
   index: number;
@@ -62,8 +64,8 @@ export type ExportTxInput = {
     quantity: number;
     unit: 'lovelace';
   };
-  datum: string;
-  assets: { policy_id: string; asset_name: string; quantity: number }[];
+  datum?: string;
+  assets: AssetClass[];
 };
 
 export type ExportTx = {
@@ -115,7 +117,7 @@ export type ContractStatus<Status, State> = {
   };
   cicWallet: { getWalletId: string };
   cicDefinition: Status;
-  cicYieldedExportTxs: ExportTx[]
+  cicYieldedExportTxs: ExportTx[];
 };
 
 export type AnyHaskellADT = { tag: string } | { tag: string; contents: unknown };
