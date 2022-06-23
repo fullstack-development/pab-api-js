@@ -50,6 +50,11 @@ export declare type MintingRedeemer = {
     policy_id: string;
 };
 export declare type ExportTxRedeemer = SpendingRedeemer | MintingRedeemer;
+export declare type AssetClass = {
+    policy_id: string;
+    asset_name: string;
+    quantity: number;
+};
 export declare type ExportTxInput = {
     id: string;
     index: number;
@@ -58,12 +63,8 @@ export declare type ExportTxInput = {
         quantity: number;
         unit: 'lovelace';
     };
-    datum: string;
-    assets: {
-        policy_id: string;
-        asset_name: string;
-        quantity: number;
-    }[];
+    datum?: string;
+    assets: AssetClass[];
 };
 export declare type ExportTx = {
     transaction: string;
